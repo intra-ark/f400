@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Remove default Next.js variables to prevent conflicts */
+:root {}
+
+body {
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(61, 205, 88, 0.1), transparent 50%),
+    radial-gradient(circle at 80% 90%, rgba(61, 205, 88, 0.08), transparent 50%);
+  background-attachment: fixed;
+  /* Ensure background stays fixed like a typical web app background */
+}
+
+.liquid-glass {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.scroll-container {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 10px;
+}
+
+.sticky-labels {
+  position: sticky;
+  left: 0;
+  z-index: 20;
+  background-color: #F0F4F8;
+  border-right: 1px solid #E5E7EB;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.data-panel {
+  min-width: 280px;
+  flex-shrink: 0;
+}
+
+.product-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233DCD58' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.2em 1.2em;
+  padding-right: 2.5rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.modal {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal.active .modal-content {
+  transform: scale(1);
+}
+
+.ker-input {
+  width: 80px;
+  text-align: center;
+  font-family: 'Inter', monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.ker-red {
+  color: #DC2626;
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5rem;
+  height: 40px;
+}
+
+@media (max-width: 1024px) {
+  .sticky-labels {
+    display: none !important;
+  }
+
+  .scroll-container {
+    display: block;
+    width: 100%;
+  }
+
+  .scroll-container>.flex {
+    display: flex;
+  }
+}
+
+.image-placeholder-inner {
+  width: 100%;
+  height: auto;
+  min-height: 300px;
+  position: relative;
+}
+
+.image-placeholder-inner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}

@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  image     String?    // URL or path to the image
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  yearData  YearData[]
+}
+
+model YearData {
+  id        Int      @id @default(autoincrement())
+  year      Int
+  dt        Float?   // Design Time
+  ut        Float?   // Useful Time
+  nva       Float?   // Non-Value Added
+  kd        Float?   // KD (%)
+  ke        Float?   // KE
+  ker       Float?   // KER
+  ksr       Float?   // KSR
+  otr       Float?   // OT
+  tsr       String?  // TSR (can be "#DIV/0!" so string might be safer, or handle in logic)
+  
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, year])
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GlobalSettings {
+  id             Int    @id @default(autoincrement())
+  headerImageUrl String @default("/F400i.png")
+}
