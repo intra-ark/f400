@@ -1,18 +1,23 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 interface User {
     id: number;
     username: string;
+    role: string;
     createdAt: string;
 }
 
 export default function UsersPage() {
+    const { data: session } = useSession();
     const [users, setUsers] = useState<User[]>([]);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(true);
+
+    const isAdmin = (session?.user as any)?.role === 'ADMIN';
 
     useEffect(() => {
         fetchUsers();
@@ -61,6 +66,8 @@ export default function UsersPage() {
             });
             if (res.ok) {
                 fetchUsers();
+            } else {
+                alert("Failed to delete user");
             }
         } catch (error) {
             console.error(error);
@@ -73,60 +80,70 @@ export default function UsersPage() {
         <div className="max-w-4xl mx-auto px-4">
             <h1 className="text-2xl font-bold mb-8 text-gray-800 dark:text-white">User Management</h1>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
-                <h2 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Add New Admin</h2>
-                <form onSubmit={handleAddUser} className="flex gap-4 items-end">
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Username</label>
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="bg-primary hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition"
-                    >
-                        Add User
-                    </button>
-                </form>
-            </div>
+            {isAdmin && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Add New User</h2>
+                    <form onSubmit={handleAddUser} className="flex gap-4 items-end">
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Username</label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Password</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="bg-primary hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition"
+                        >
+                            Add User
+                        </button>
+                    </form>
+                </div>
+            )}
 
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-gray-900">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            {isAdmin && <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>}
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {users.map((user) => (
                             <tr key={user.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{user.username}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button
-                                        onClick={() => handleDeleteUser(user.id)}
-                                        className="text-red-600 hover:text-red-900 dark:hover:text-red-400"
-                                    >
-                                        Delete
-                                    </button>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'ADMIN' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                        {user.role || 'USER'}
+                                    </span>
                                 </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</td>
+                                {isAdmin && (
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button
+                                            onClick={() => handleDeleteUser(user.id)}
+                                            className="text-red-600 hover:text-red-900 dark:hover:text-red-400"
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>

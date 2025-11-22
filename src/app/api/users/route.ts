@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function GET() {
     try {
         const users = await prisma.user.findMany({
-            select: { id: true, username: true, createdAt: true }
+            select: { id: true, username: true, role: true, createdAt: true }
         });
         return NextResponse.json(users);
     } catch (error) {
@@ -14,6 +16,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.role !== 'ADMIN') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
     try {
         const { username, password } = await request.json();
 
@@ -34,6 +41,11 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.role !== 'ADMIN') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

@@ -89,14 +89,18 @@ async function main() {
       });
     }
   }
-  // Create default admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  // Create admin user
+  const hashedPassword = await bcrypt.hash('Manisa.1984', 10);
   await prisma.user.upsert({
-    where: { username: 'admin' },
-    update: {},
+    where: { username: 'ahmet mersin' },
+    update: {
+      role: 'ADMIN',
+      password: hashedPassword, // Update password if user exists
+    },
     create: {
-      username: 'admin',
+      username: 'ahmet mersin',
       password: hashedPassword,
+      role: 'ADMIN',
     },
   });
 
