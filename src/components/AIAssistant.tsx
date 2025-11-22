@@ -12,20 +12,20 @@ export default function AIAssistant() {
     const [messages, setMessages] = useState<Message[]>([
         {
             role: 'assistant',
-            content: 'Hi! I\'m your F400 assistant. Ask me about SPS analysis, product management, or any features! 🚀'
+            content: 'Merhaba! Ben Intra Arc, Ahmet Mersin tarafından geliştirilmiş ileri seviye düşünce sistemiyim. Ürünleriniz, SPS analizi veya sistem özellikleri hakkında her şeyi sorabilirsiniz. 🚀'
         }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [bounce, setBounce] = useState(false);
+    const [pulse, setPulse] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Bounce animation every 8 seconds
+    // Pulse animation every 5 seconds
     useEffect(() => {
         const interval = setInterval(() => {
-            setBounce(true);
-            setTimeout(() => setBounce(false), 700);
-        }, 8000);
+            setPulse(true);
+            setTimeout(() => setPulse(false), 2000);
+        }, 5000);
         return () => clearInterval(interval);
     }, []);
 
@@ -48,7 +48,7 @@ export default function AIAssistant() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: input,
-                    history: messages.slice(1) // Exclude initial greeting
+                    history: messages.slice(1)
                 })
             });
 
@@ -62,13 +62,13 @@ export default function AIAssistant() {
             } else {
                 setMessages(prev => [...prev, {
                     role: 'assistant',
-                    content: `Error: ${data.error || 'Failed to get response'}`
+                    content: `Hata: ${data.error || 'Yanıt alınamadı'}`
                 }]);
             }
         } catch (error) {
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: 'Sorry, I encountered an error. Please try again.'
+                content: 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.'
             }]);
         } finally {
             setIsLoading(false);
@@ -77,87 +77,89 @@ export default function AIAssistant() {
 
     return (
         <>
-            {/* Floating Button */}
+            {/* Jarvis-Style Floating Orb */}
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className={`fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-full p-4 shadow-2xl transition-all duration-300 transform hover:scale-110 ${bounce ? 'animate-bounce' : ''
-                        }`}
-                    aria-label="Open AI Assistant"
+                    className="fixed bottom-8 right-8 z-50 group"
+                    aria-label="AI Assistant"
                 >
-                    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
-                        <path
-                            d="M12 2L2 7L12 12L22 7L12 2Z"
-                            fill="currentColor"
-                            opacity="0.3"
-                        />
-                        <path
-                            d="M2 17L12 22L22 17"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                        <path
-                            d="M2 12L12 17L22 12"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    </svg>
+                    {/* Outer glow rings */}
+                    <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 opacity-75 blur-xl ${pulse ? 'animate-ping' : ''}`}></div>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 opacity-50 blur-md animate-pulse"></div>
+
+                    {/* Main orb */}
+                    <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 p-[2px] transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
+                        <div className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center relative overflow-hidden">
+                            {/* Inner animated gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-blue-500/20 to-purple-600/20 animate-spin-slow"></div>
+
+                            {/* Center AI core */}
+                            <div className="relative z-10 w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/50">
+                                <div className="w-4 h-4 rounded-full bg-white animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
                 </button>
             )}
 
-            {/* Chat Window */}
+            {/* Premium Chat Window */}
             {isOpen && (
-                <div className="fixed bottom-6 right-6 z-50 w-96 h-[500px] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden border-2 border-blue-500/20">
-                    {/* Header */}
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2L2 7L12 12L22 7L12 2Z" opacity="0.5" />
-                                    <path d="M2 17L12 22L22 17M2 12L12 17L22 12" strokeWidth="2" stroke="currentColor" fill="none" />
-                                </svg>
+                <div className="fixed bottom-8 right-8 z-50 w-[420px] h-[600px] rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 border border-cyan-500/30">
+                    {/* Jarvis-Style Header */}
+                    <div className="relative p-5 border-b border-cyan-500/30">
+                        {/* Animated background */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-600/10"></div>
+                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+
+                        <div className="relative flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="relative w-10 h-10">
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 animate-pulse opacity-50 blur-sm"></div>
+                                    <div className="relative w-full h-full rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 p-[2px]">
+                                        <div className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center">
+                                            <div className="w-4 h-4 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-bold text-lg tracking-wide">Intra Arc</h3>
+                                    <p className="text-cyan-400 text-xs font-mono">İleri seviye düşünce sistemi</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="text-white font-bold">F400 Assistant</h3>
-                                <p className="text-white/70 text-xs">Powered by Gemini AI</p>
-                            </div>
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="text-gray-400 hover:text-white hover:bg-white/10 rounded-lg p-2 transition-all duration-200"
+                            >
+                                <span className="material-icons-outlined">close</span>
+                            </button>
                         </div>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="text-white hover:bg-white/20 rounded-lg p-2 transition"
-                        >
-                            <span className="material-icons-outlined">close</span>
-                        </button>
                     </div>
 
                     {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-cyan-500/50 scrollbar-track-transparent">
                         {messages.map((msg, idx) => (
                             <div
                                 key={idx}
-                                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
                             >
                                 <div
-                                    className={`max-w-[80%] rounded-2xl px-4 py-2 ${msg.role === 'user'
-                                            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                                            : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700'
+                                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${msg.role === 'user'
+                                        ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
+                                        : 'bg-gray-800/80 text-gray-100 border border-cyan-500/20 backdrop-blur-sm'
                                         }`}
                                 >
-                                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                                 </div>
                             </div>
                         ))}
                         {isLoading && (
-                            <div className="flex justify-start">
-                                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-2">
-                                    <div className="flex gap-1">
-                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                            <div className="flex justify-start animate-fade-in">
+                                <div className="bg-gray-800/80 border border-cyan-500/20 backdrop-blur-sm rounded-2xl px-4 py-3">
+                                    <div className="flex gap-1.5">
+                                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                                     </div>
                                 </div>
                             </div>
@@ -165,29 +167,59 @@ export default function AIAssistant() {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input */}
-                    <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                placeholder="Ask me anything..."
-                                className="flex-1 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                disabled={isLoading}
-                            />
-                            <button
-                                onClick={handleSend}
-                                disabled={isLoading || !input.trim()}
-                                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <span className="material-icons-outlined text-sm">send</span>
-                            </button>
+                    {/* Premium Input */}
+                    <div className="p-4 border-t border-cyan-500/30 bg-gray-900/50 backdrop-blur-sm">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-600/10 rounded-xl"></div>
+                            <div className="relative flex gap-2">
+                                <input
+                                    type="text"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                    placeholder="Bir şey sorun..."
+                                    className="flex-1 p-3 bg-gray-800/80 border border-cyan-500/30 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-cyan-400 focus:border-transparent text-sm backdrop-blur-sm transition-all"
+                                    disabled={isLoading}
+                                />
+                                <button
+                                    onClick={handleSend}
+                                    disabled={isLoading || !input.trim()}
+                                    className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-5 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/20 transform hover:scale-105"
+                                >
+                                    <span className="material-icons-outlined text-lg">send</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
+
+            <style jsx global>{`
+                @keyframes fade-in {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in {
+                    animation: fade-in 0.3s ease-out;
+                }
+                @keyframes spin-slow {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                .animate-spin-slow {
+                    animation: spin-slow 8s linear infinite;
+                }
+                .scrollbar-thin::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .scrollbar-thumb-cyan-500\\/50::-webkit-scrollbar-thumb {
+                    background-color: rgba(6, 182, 212, 0.5);
+                    border-radius: 9999px;
+                }
+                .scrollbar-track-transparent::-webkit-scrollbar-track {
+                    background-color: transparent;
+                }
+            `}</style>
         </>
     );
 }
