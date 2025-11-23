@@ -157,24 +157,16 @@ export default function Dashboard() {
 
             {/* HEADER */}
             {/* HEADER */}
+            {/* HEADER */}
             <header className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 md:gap-0">
-                {/* Left Side: Buttons (Help, Author, Menu) */}
-                <div className="flex-1 flex justify-start gap-3 w-full md:w-auto order-2 md:order-1 absolute top-4 left-4 md:static">
-                    {/* Menu Button - First on left */}
-                    <button onClick={() => setDrawerOpen(true)}
-                        className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center gap-2">
-                        <span className="material-icons-outlined">menu</span>
-                        <span className="hidden sm:inline">Menu</span>
-                    </button>
-                    <button onClick={() => setModalOpen(true)}
-                        className="hidden md:flex bg-primary hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-                        <span>Hazırlayan</span>
-                    </button>
-                    <button onClick={() => window.location.href = "mailto:ahmet.mersin@se.com?subject=SET%20SPS%20Yardım%20İsteği"}
-                        className="hidden md:flex bg-primary/10 hover:bg-primary/20 text-primary font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 text-sm items-center gap-1">
-                        <span className="material-icons-outlined text-base">help</span>
-                        <span>Yardım</span>
-                    </button>
+                {/* Left Side: Logo */}
+                <div className="flex-1 flex items-center gap-4 w-full md:w-auto justify-center md:justify-start">
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-bold text-primary">Schneider</h2>
+                        <p className="text-xs md:text-sm text-text-secondary-light dark:text-text-secondary-dark">Electric</p>
+                    </div>
+                    <div className="text-2xl md:text-3xl font-light text-gray-400">|</div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-primary">SET SPS</h2>
                 </div>
 
                 {/* Center: Title */}
@@ -184,14 +176,23 @@ export default function Dashboard() {
                     </h1>
                 </div>
 
-                {/* Right Side: Logo */}
-                <div className="flex-1 flex items-center gap-4 w-full md:w-auto justify-center md:justify-end order-1 md:order-3">
-                    <div>
-                        <h2 className="text-2xl md:text-3xl font-bold text-primary">Schneider</h2>
-                        <p className="text-xs md:text-sm text-text-secondary-light dark:text-text-secondary-dark">Electric</p>
-                    </div>
-                    <div className="text-2xl md:text-3xl font-light text-gray-400">|</div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-primary">SET SPS</h2>
+                {/* Right Side: Buttons (Help, Author, Menu) */}
+                <div className="flex-1 flex justify-end gap-3 w-full md:w-auto order-2 md:order-3 absolute top-4 right-4 md:static">
+                    <button onClick={() => window.location.href = "mailto:ahmet.mersin@se.com?subject=SET%20SPS%20Yardım%20İsteği"}
+                        className="hidden md:flex bg-primary/10 hover:bg-primary/20 text-primary font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 text-sm items-center gap-1">
+                        <span className="material-icons-outlined text-base">help</span>
+                        <span>Yardım</span>
+                    </button>
+                    <button onClick={() => setModalOpen(true)}
+                        className="hidden md:flex bg-primary hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                        <span>Hazırlayan</span>
+                    </button>
+                    {/* Menu Button */}
+                    <button onClick={() => setDrawerOpen(true)}
+                        className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center gap-2">
+                        <span className="material-icons-outlined">menu</span>
+                        <span className="hidden sm:inline">Menu</span>
+                    </button>
                 </div>
             </header>
 
