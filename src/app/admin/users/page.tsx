@@ -133,7 +133,8 @@ export default function UsersPage() {
 
     const fetchAllLines = async () => {
         try {
-            const res = await fetch('/api/lines');
+            // Fetch all lines for admin assignment modal
+            const res = await fetch('/api/lines?all=true');
             const data = await res.json();
             setAllLines(data);
         } catch (error) {

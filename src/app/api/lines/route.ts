@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getUserLines } from '@/lib/permissions';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -14,6 +14,18 @@ export async function GET() {
 
         const userId = parseInt(session.user.id);
         const userRole = session.user.role;
+
+        // Check if admin wants all lines (for assignment modal)
+        const { searchParams } = new URL(request.url);
+        const fetchAll = searchParams.get('all') === 'true';
+
+        if (fetchAll && userRole === 'ADMIN') {
+            // Return all lines for admin assignment modal
+            const allLines = await prisma.line.findMany({
+                orderBy: { id: 'asc' }
+            });
+            return NextResponse.json(allLines);
+        }
 
         // Get lines based on user permissions
         const lines = await getUserLines(userId, userRole);
