@@ -90,7 +90,8 @@ async function main() {
     }
   }
   // Create admin user
-  const hashedPassword = await bcrypt.hash('Manisa.1984', 10);
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123'; // Default only for local dev if env missing
+  const hashedPassword = await bcrypt.hash(adminPassword, 10);
   await prisma.user.upsert({
     where: { username: 'ahmet mersin' },
     update: {
