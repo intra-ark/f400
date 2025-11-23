@@ -19,17 +19,8 @@ const docSections: DocSection[] = [
         ]
     },
     {
-        title: "Kullanıcı Kılavuzları",
-        items: [
-            { title: "Admin Kullanıcı Kılavuzu", file: "04-admin-kilavuzu", description: "Admin özellikleri ve kullanımı" },
-            { title: "Normal Kullanıcı Kılavuzu", file: "05-kullanici-kilavuzu", description: "Kullanıcı özellikleri ve kullanımı" },
-        ]
-    },
-    {
         title: "Sistem Mimarisi",
         items: [
-            { title: "Genel Mimari", file: "07-mimari", description: "Sistem mimarisi ve teknolojiler" },
-            { title: "Veritabanı Şeması", file: "08-veritabani", description: "Database yapısı ve ilişkiler" },
             { title: "Rol Bazlı Yetkilendirme", file: "09-yetkiler", description: "İzin sistemi ve roller" },
         ]
     },
@@ -37,16 +28,6 @@ const docSections: DocSection[] = [
         title: "API Dokümantasyonu",
         items: [
             { title: "API Genel Bakış", file: "10-api-genel", description: "API kullanımı ve endpoint'ler" },
-            { title: "Hat (Line) API", file: "12-api-lines", description: "Hat yönetimi API'leri" },
-            { title: "Kullanıcı API", file: "13-api-users", description: "Kullanıcı yönetimi API'leri" },
-            { title: "Kullanıcı-Hat Atama API", file: "16-api-user-lines", description: "Hat atama API'leri" },
-        ]
-    },
-    {
-        title: "Özellikler",
-        items: [
-            { title: "Hat Yönetimi", file: "17-hat-yonetimi", description: "Hat ekleme, düzenleme, silme" },
-            { title: "Kullanıcı-Hat Ataması", file: "18-kullanici-hat-atama", description: "Kullanıcılara hat atama sistemi" },
         ]
     }
 ];
