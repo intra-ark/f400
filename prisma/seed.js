@@ -9,8 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const db2023 = {
     "NL AD6-1250A": { dt: "1.519,13", ut: "1.359,65", nva: "159,48", kd: "0,895", ke: "0,673", ker: "0,723", otr: "2100,31", tsr: "290382,902", ksr: "0,723" },
     "NL AD6-2500A": { dt: "1.384,64", ut: "1.244,38", nva: "140,25", kd: "0,898", ke: "0,673", ker: "0,723", otr: "1914,37", tsr: "290382,902", ksr: "0,723" },
@@ -96,10 +97,10 @@ function main() {
 }
 main()
     .then(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield prisma.$disconnect();
-}))
+        yield prisma.$disconnect();
+    }))
     .catch((e) => __awaiter(void 0, void 0, void 0, function* () {
-    console.error(e);
-    yield prisma.$disconnect();
-    process.exit(1);
-}));
+        console.error(e);
+        yield prisma.$disconnect();
+        process.exit(1);
+    }));

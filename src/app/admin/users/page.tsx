@@ -22,7 +22,7 @@ export default function UsersPage() {
     const [resetUserId, setResetUserId] = useState<number | null>(null);
     const [newPassword, setNewPassword] = useState("");
 
-    const isAdmin = (session?.user as any)?.role === 'ADMIN';
+    const isAdmin = session?.user?.role === 'ADMIN';
 
     useEffect(() => {
         fetchUsers();

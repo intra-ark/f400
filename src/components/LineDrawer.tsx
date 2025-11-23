@@ -22,7 +22,7 @@ interface LineDrawerProps {
 
 export default function LineDrawer({ isOpen, onClose, lines, selectedLineId, onSelectLine, onOpenAuthorModal }: LineDrawerProps) {
     const { data: session } = useSession();
-    const isAdmin = (session?.user as any)?.role === 'ADMIN';
+    const isAdmin = session?.user?.role === 'ADMIN';
 
     return (
         <>
@@ -130,7 +130,7 @@ export default function LineDrawer({ isOpen, onClose, lines, selectedLineId, onS
                                     </div>
                                     <div>
                                         <p className="font-medium text-gray-900 dark:text-white">{session.user?.name}</p>
-                                        <p className="text-xs text-gray-500">{(session.user as any)?.role || 'USER'}</p>
+                                        <p className="text-xs text-gray-500">{session.user?.role || 'USER'}</p>
                                     </div>
                                 </div>
                                 <button
