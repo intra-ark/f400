@@ -19,15 +19,33 @@ const docSections: DocSection[] = [
         ]
     },
     {
-        title: "Sistem Mimarisi",
+        title: "Kullanıcı Kılavuzu",
         items: [
-            { title: "Rol Bazlı Yetkilendirme", file: "09-yetkiler", description: "İzin sistemi ve roller" },
+            { title: "Admin Kılavuzu", file: "04-admin-kilavuzu", description: "Admin yetkileri ve panel kullanımı" },
+            { title: "Kullanıcı Kılavuzu", file: "05-kullanici-kilavuzu", description: "Normal kullanıcıların sistem kullanımı" },
         ]
     },
     {
-        title: "API Dokümantasyonu",
+        title: "Mimari",
+        items: [
+            { title: "Sistem Mimari", file: "07-mimari", description: "Teknoloji stack ve mimari diagram" },
+            { title: "Veritabanı Şeması", file: "08-veritabani", description: "Prisma modelleri ve ilişkiler" },
+        ]
+    },
+    {
+        title: "API Detayları",
         items: [
             { title: "API Genel Bakış", file: "10-api-genel", description: "API kullanımı ve endpoint'ler" },
+            { title: "Hat (Line) API", file: "12-api-lines", description: "Hat yönetimi endpoint'leri" },
+            { title: "Kullanıcı API", file: "13-api-users", description: "Kullanıcı yönetimi endpoint'leri" },
+            { title: "Kullanıcı‑Hat Atama API", file: "16-api-user-lines", description: "Atama işlemleri endpoint'leri" },
+        ]
+    },
+    {
+        title: "Özellikler",
+        items: [
+            { title: "Hat Yönetimi", file: "17-hat-yonetimi", description: "Hat ekleme, düzenleme, silme" },
+            { title: "Kullanıcı‑Hat Atama", file: "18-kullanici-hat-atama", description: "Kullanıcıya hat atama süreci" },
         ]
     }
 ];
