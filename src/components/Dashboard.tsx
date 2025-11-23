@@ -205,7 +205,7 @@ export default function Dashboard() {
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-600"></div>
                             <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2">
                                 <span className="material-icons-outlined text-primary">bar_chart</span>
-                                Global SPS Analysis (Average)
+                                Manisa Factory SPS Analysis (Average)
                             </h3>
                             <div className="h-64">
                                 {(() => {
