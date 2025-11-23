@@ -178,7 +178,7 @@ export default function Dashboard() {
 
                 {/* Right Side: Buttons (Help, Author, Menu) */}
                 <div className="flex-1 flex justify-end gap-3 w-full md:w-auto order-2 md:order-3 absolute top-4 right-4 md:static">
-                    <button onClick={() => window.location.href = "mailto:ahmet.mersin@se.com?subject=SET%20SPS%20Yardım%20İsteği"}
+                    <button onClick={() => window.location.href = "/docs"}
                         className="hidden md:flex bg-primary/10 hover:bg-primary/20 text-primary font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 text-sm items-center gap-1">
                         <span className="material-icons-outlined text-base">help</span>
                         <span>Yardım</span>
