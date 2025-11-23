@@ -184,11 +184,12 @@ export default function UsersPage() {
                 setUserLines([]);
             } else {
                 const err = await res.json();
-                alert(err.error || 'Failed to update line assignments');
+                console.error('API Error:', err);
+                alert(`Failed to assign lines: ${err.error || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error saving line assignments:', error);
-            alert('An error occurred');
+            alert(`An error occurred: ${error}`);
         }
     };
 
@@ -254,12 +255,14 @@ export default function UsersPage() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</td>
                                 {isAdmin && (
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                                        <button
-                                            onClick={() => openLineAssignModal(user.id)}
-                                            className="text-primary hover:text-green-700 dark:hover:text-green-400"
-                                        >
-                                            Assign Lines
-                                        </button>
+                                        {user.role !== 'ADMIN' && (
+                                            <button
+                                                onClick={() => openLineAssignModal(user.id)}
+                                                className="text-primary hover:text-green-700 dark:hover:text-green-400"
+                                            >
+                                                Assign Lines
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => openResetModal(user.id)}
                                             className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400"
