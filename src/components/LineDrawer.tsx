@@ -108,14 +108,17 @@ export default function LineDrawer({ isOpen, onClose, lines, selectedLineId, onS
                                 <span className="font-medium">Hazırlayan</span>
                             </button>
                         </div>
-                        {/* Admin Link */}
-                        <Link
-                            href="/admin"
-                            onClick={onClose}
-                            className="block w-full text-center py-3 px-4 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-bold transition-colors"
-                        >
-                            Admin Panel
-                        </Link>
+
+                        {/* Admin Link - Only visible when logged in */}
+                        {session && (
+                            <Link
+                                href="/admin"
+                                onClick={onClose}
+                                className="block w-full text-center py-3 px-4 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-bold transition-colors"
+                            >
+                                Admin Panel
+                            </Link>
+                        )}
 
                         {/* Auth Buttons */}
                         {session ? (
