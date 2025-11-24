@@ -45,6 +45,26 @@ export async function getUserLines() {
 }
 
 /**
+ * Get all lines with assignment status for a specific user
+ */
+export async function getUserLinesWithAssignment(userId: number) {
+    const lines = await prisma.line.findMany({
+        orderBy: { id: 'asc' },
+        include: {
+            assignedUsers: {
+                where: { userId },
+                select: { userId: true }
+            }
+        }
+    });
+
+    return lines.map(line => ({
+        ...line,
+        isAssigned: line.assignedUsers.length > 0
+    }));
+}
+
+/**
  * Get line IDs accessible by a user (viewable)
  */
 export async function getUserLineIds(): Promise<number[]> {

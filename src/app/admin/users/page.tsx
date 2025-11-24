@@ -41,6 +41,12 @@ export default function UsersPage() {
     const [userLines, setUserLines] = useState<number[]>([]);
     const [loadingLines, setLoadingLines] = useState(false);
 
+    // Role Change State
+    const [roleChangeModalOpen, setRoleChangeModalOpen] = useState(false);
+    const [roleChangeUserId, setRoleChangeUserId] = useState<number | null>(null);
+    const [roleChangeUsername, setRoleChangeUsername] = useState("");
+    const [selectedRole, setSelectedRole] = useState<string>("");
+
     // Toast Notification State
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -205,6 +211,46 @@ export default function UsersPage() {
         }
     };
 
+    const openRoleChangeModal = (userId: number, currentRole: string, username: string) => {
+        // Prevent changing Super User role
+        if (username.toLowerCase() === 'ahmet mersin') {
+            showToastNotification('Cannot modify Super User role', 'error');
+            return;
+        }
+
+        setRoleChangeUserId(userId);
+        setRoleChangeUsername(username);
+        setSelectedRole(currentRole || 'USER');
+        setRoleChangeModalOpen(true);
+    };
+
+    const handleRoleChange = async () => {
+        if (!roleChangeUserId || !selectedRole) return;
+
+        try {
+            const res = await fetch('/api/users', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: roleChangeUserId, role: selectedRole })
+            });
+
+            if (res.ok) {
+                showToastNotification(`Role updated to ${selectedRole} successfully!`, 'success');
+                setRoleChangeModalOpen(false);
+                setRoleChangeUserId(null);
+                setRoleChangeUsername("");
+                setSelectedRole("");
+                fetchUsers();
+            } else {
+                const err = await res.json();
+                showToastNotification(`Failed: ${err.error || 'Unknown error'}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error updating role:', error);
+            showToastNotification(`Error: ${error}`, 'error');
+        }
+    };
+
     if (loading) return <div>Loading...</div>;
 
     return (
@@ -260,9 +306,25 @@ export default function UsersPage() {
                             <tr key={user.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{user.username}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'ADMIN' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                        {user.role || 'USER'}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'ADMIN' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                            {user.role || 'USER'}
+                                        </span>
+                                        {isAdmin && user.username.toLowerCase() !== 'ahmet mersin' && (
+                                            <button
+                                                onClick={() => openRoleChangeModal(user.id, user.role || 'USER', user.username)}
+                                                className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline"
+                                                title="Change user role"
+                                            >
+                                                Change Role
+                                            </button>
+                                        )}
+                                        {user.username.toLowerCase() === 'ahmet mersin' && (
+                                            <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded-full font-semibold">
+                                                SUPER USER
+                                            </span>
+                                        )}
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</td>
                                 {isAdmin && (
@@ -391,12 +453,91 @@ export default function UsersPage() {
                 </div>
             )}
 
+            {/* Role Change Modal */}
+            {roleChangeModalOpen && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md">
+                        <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+                            Change User Role - {roleChangeUsername}
+                        </h3>
+
+                        <div className="mb-6">
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Select the role for this user:
+                            </p>
+                            <div className="space-y-3">
+                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedRole === 'USER'
+                                        ? 'border-primary bg-green-50 dark:bg-green-900/20'
+                                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                    }`}>
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="USER"
+                                        checked={selectedRole === 'USER'}
+                                        onChange={(e) => setSelectedRole(e.target.value)}
+                                        className="mr-3 h-4 w-4 text-primary focus:ring-primary"
+                                    />
+                                    <div>
+                                        <div className="font-semibold text-gray-800 dark:text-white">User</div>
+                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                            Can view and edit assigned production lines only
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedRole === 'ADMIN'
+                                        ? 'border-primary bg-green-50 dark:bg-green-900/20'
+                                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                    }`}>
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="ADMIN"
+                                        checked={selectedRole === 'ADMIN'}
+                                        onChange={(e) => setSelectedRole(e.target.value)}
+                                        className="mr-3 h-4 w-4 text-primary focus:ring-primary"
+                                    />
+                                    <div>
+                                        <div className="font-semibold text-gray-800 dark:text-white">Admin</div>
+                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                            Full access to all features and user management
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setRoleChangeModalOpen(false);
+                                    setRoleChangeUserId(null);
+                                    setRoleChangeUsername("");
+                                    setSelectedRole("");
+                                }}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleRoleChange}
+                                className="px-4 py-2 bg-primary hover:bg-green-600 text-white font-bold rounded"
+                            >
+                                Update Role
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Toast Notification */}
             {showToast && (
                 <div className="fixed bottom-8 right-8 z-50 animate-fade-in">
                     <div className={`px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 ${toastType === 'success'
-                            ? 'bg-green-500 text-white'
-                            : 'bg-red-500 text-white'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
                         }`}>
                         <span className="material-icons-outlined">
                             {toastType === 'success' ? 'check_circle' : 'error'}

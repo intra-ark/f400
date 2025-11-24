@@ -8,6 +8,7 @@ interface Line {
     id: number;
     name: string;
     slug: string;
+    isAssigned?: boolean;
 }
 
 export default function AdminDashboard() {
@@ -95,6 +96,10 @@ export default function AdminDashboard() {
 
     if (loading) return <div className="p-8 text-center">Loading...</div>;
 
+    // Filter lines based on assignment
+    const assignedLines = isAdmin ? lines : lines.filter(l => l.isAssigned);
+    const unassignedLines = isAdmin ? [] : lines.filter(l => !l.isAssigned);
+
     return (
         <div className="p-8 max-w-6xl mx-auto">
             <header className="flex justify-between items-center mb-8">
@@ -109,7 +114,7 @@ export default function AdminDashboard() {
                 </div>
             </header>
 
-            {/* Line Selection Grid */}
+            {/* Assigned Lines Section */}
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200">
@@ -126,7 +131,7 @@ export default function AdminDashboard() {
                     )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {lines.map(line => (
+                    {assignedLines.map(line => (
                         <div key={line.id} className="relative group">
                             <Link href={`/admin/${line.id}`} className="block">
                                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border-2 border-transparent hover:border-primary transition-all duration-300 transform hover:-translate-y-1">
@@ -152,12 +157,36 @@ export default function AdminDashboard() {
                         </div>
                     ))}
                 </div>
-                {lines.length === 0 && (
+                {assignedLines.length === 0 && (
                     <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                         {isAdmin ? 'No lines created yet. Click "Add New Line" to get started.' : 'No lines assigned to you. Please contact an administrator.'}
                     </div>
                 )}
             </div>
+
+            {/* Unassigned Lines Section (Only for non-admins) */}
+            {!isAdmin && unassignedLines.length > 0 && (
+                <div className="mb-12">
+                    <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-6">
+                        Not Assigned Lines
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 opacity-75">
+                        {unassignedLines.map(line => (
+                            <div key={line.id} className="relative group">
+                                <Link href={`/admin/${line.id}`} className="block">
+                                    <div className="bg-gray-100 dark:bg-gray-900 rounded-xl shadow p-8 border-2 border-transparent hover:border-gray-300 transition-all duration-300">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <span className="text-2xl font-bold text-gray-600 dark:text-gray-400">{line.name}</span>
+                                            <span className="material-icons-outlined text-4xl text-gray-400">lock</span>
+                                        </div>
+                                        <p className="text-gray-400 dark:text-gray-500 font-medium">View Only &rarr;</p>
+                                    </div>
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Add Line Modal */}
             {showAddModal && (

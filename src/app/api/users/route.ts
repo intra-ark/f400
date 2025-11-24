@@ -68,21 +68,55 @@ export async function PUT(request: Request) {
     }
 
     try {
-        const { id, password } = await request.json();
+        const { id, password, role } = await request.json();
 
-        if (!id || !password) {
-            return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+        if (!id) {
+            return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Fetch the target user to check their username
+        const targetUser = await prisma.user.findUnique({
+            where: { id: parseInt(id) }
+        });
+
+        if (!targetUser) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        // SUPER USER PROTECTION: "Ahmet Mersin" cannot have their role changed by anyone
+        if (targetUser.username.toLowerCase() === 'ahmet mersin' && role !== undefined) {
+            return NextResponse.json({
+                error: 'Cannot modify Super User role'
+            }, { status: 403 });
+        }
+
+        // Build update data
+        const updateData: { password?: string; role?: string } = {};
+
+        if (password) {
+            updateData.password = await bcrypt.hash(password, 10);
+        }
+
+        if (role !== undefined) {
+            // Validate role
+            if (role !== 'ADMIN' && role !== 'USER') {
+                return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
+            }
+            updateData.role = role;
+        }
+
+        if (Object.keys(updateData).length === 0) {
+            return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+        }
 
         await prisma.user.update({
             where: { id: parseInt(id) },
-            data: { password: hashedPassword },
+            data: updateData,
         });
 
         return NextResponse.json({ success: true });
     } catch {
-        return NextResponse.json({ error: 'Failed to update password' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
     }
 }
+

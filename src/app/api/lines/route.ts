@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { getUserLines } from '@/lib/permissions';
+import { getUserLines, getUserLinesWithAssignment } from '@/lib/permissions';
 
 export async function GET(request: NextRequest) {
     try {
@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
         }
 
         const userRole = session.user.role;
+        const userId = parseInt(session.user.id);
 
         // Admin requesting all lines (e.g., assignment modal)
         if (fetchAll && userRole === 'ADMIN') {
@@ -29,7 +30,8 @@ export async function GET(request: NextRequest) {
         }
 
         // Regular logged‑in user: return lines based on permissions
-        const lines = await getUserLines();
+        // Now returns lines with isAssigned flag
+        const lines = await getUserLinesWithAssignment(userId);
         return NextResponse.json(lines);
     } catch (error) {
         console.error('Error fetching lines:', error);
