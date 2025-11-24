@@ -12,40 +12,22 @@ interface DocSection {
 
 const docSections: DocSection[] = [
     {
-        title: "Başlangıç",
+        title: "Genel Bakış",
         items: [
-            { title: "Sisteme Giriş", file: "01-giris", description: "SPS Analiz Sistemi nedir, temel kavramlar" },
-            { title: "Hızlı Başlangıç", file: "02-hizli-baslangic", description: "İlk adımlar ve temel kullanım" },
+            { title: "Sisteme Giriş", file: "01-introduction", description: "SET SPS nedir, temel kavramlar ve metodoloji" },
         ]
     },
     {
-        title: "Kullanıcı Kılavuzu",
+        title: "Kılavuzlar",
         items: [
-            { title: "Admin Kılavuzu", file: "04-admin-kilavuzu", description: "Admin yetkileri ve panel kullanımı" },
-            { title: "Kullanıcı Kılavuzu", file: "05-kullanici-kilavuzu", description: "Normal kullanıcıların sistem kullanımı" },
+            { title: "Kullanıcı Kılavuzu", file: "02-user-guide", description: "Dashboard, Analiz ve Raporlama kullanımı" },
+            { title: "Yönetici (Admin) Kılavuzu", file: "03-admin-guide", description: "Hat, Ürün ve Kullanıcı yönetimi" },
         ]
     },
     {
-        title: "Mimari",
+        title: "Teknik",
         items: [
-            { title: "Sistem Mimari", file: "07-mimari", description: "Teknoloji stack ve mimari diagram" },
-            { title: "Veritabanı Şeması", file: "08-veritabani", description: "Prisma modelleri ve ilişkiler" },
-        ]
-    },
-    {
-        title: "API Detayları",
-        items: [
-            { title: "API Genel Bakış", file: "10-api-genel", description: "API kullanımı ve endpoint'ler" },
-            { title: "Hat (Line) API", file: "12-api-lines", description: "Hat yönetimi endpoint'leri" },
-            { title: "Kullanıcı API", file: "13-api-users", description: "Kullanıcı yönetimi endpoint'leri" },
-            { title: "Kullanıcı‑Hat Atama API", file: "16-api-user-lines", description: "Atama işlemleri endpoint'leri" },
-        ]
-    },
-    {
-        title: "Özellikler",
-        items: [
-            { title: "Hat Yönetimi", file: "17-hat-yonetimi", description: "Hat ekleme, düzenleme, silme" },
-            { title: "Kullanıcı‑Hat Atama", file: "18-kullanici-hat-atama", description: "Kullanıcıya hat atama süreci" },
+            { title: "Teknik Dokümantasyon", file: "04-technical", description: "Mimari, API ve Veritabanı detayları" },
         ]
     }
 ];
@@ -143,7 +125,7 @@ export default function DocsPage() {
                                     </p>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
                                         <button
-                                            onClick={() => loadDoc('01-giris')}
+                                            onClick={() => loadDoc('01-introduction')}
                                             className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl hover:shadow-lg transition-all"
                                         >
                                             <span className="material-icons-outlined text-4xl text-blue-600 dark:text-blue-400 mb-2">rocket_launch</span>
@@ -151,12 +133,12 @@ export default function DocsPage() {
                                             <p className="text-sm text-gray-600 dark:text-gray-400">Sisteme giriş ve temel kavramlar</p>
                                         </button>
                                         <button
-                                            onClick={() => loadDoc('10-api-genel')}
+                                            onClick={() => loadDoc('02-user-guide')}
                                             className="p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl hover:shadow-lg transition-all"
                                         >
-                                            <span className="material-icons-outlined text-4xl text-green-600 dark:text-green-400 mb-2">api</span>
-                                            <h3 className="font-bold text-gray-900 dark:text-white mb-1">API Dokümantasyonu</h3>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">API kullanımı ve endpoint&apos;ler</p>
+                                            <span className="material-icons-outlined text-4xl text-green-600 dark:text-green-400 mb-2">menu_book</span>
+                                            <h3 className="font-bold text-gray-900 dark:text-white mb-1">Kullanıcı Kılavuzu</h3>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">Dashboard ve raporlama kullanımı</p>
                                         </button>
                                     </div>
                                 </div>

@@ -1,32 +1,33 @@
-# User Guide
+# Kullanıcı Kılavuzu
 
-## 👋 Welcome to SET SPS
+Bu bölüm, SET SPS sisteminin günlük kullanım detaylarını içerir.
 
-SET SPS is your tool for monitoring manufacturing time definitions and efficiency metrics.
+## 📊 Dashboard (Gösterge Paneli)
 
-## 🏠 Dashboard
+Sisteme giriş yaptığınızda sizi karşılayan ana ekrandır. İki temel görünüm sunar:
 
-The main dashboard provides a high-level view of production performance.
+### 1. Klasik Görünüm
+*   Hat bazlı genel durum özeti.
+*   Hızlı erişim kartları.
 
-### Features
-*   **Global Overview**: When no specific line is selected, you see aggregated data across all assigned lines.
-*   **Line Selection**: Click on a line card in the "Production Lines" section to view data specific to that line.
-*   **Metrics**:
-    *   **KD (Efficiency)**: Key performance indicator.
-    *   **SPS Analysis**: Breakdown of OT (Operation Time), DT (Delay Time), and UT (Unplanned Time).
-    *   **Waterfall Chart**: Visual representation of time losses.
+### 2. Analitik Görünüm (Analytics)
+Detaylı veri analizi için kullanılır:
+*   **Yıl Seçimi:** Geçmiş ve gelecek yıllara ait verileri görüntüleyin.
+*   **KPI Kartları:** Ortalama SPS, Cycle Time, Uptime ve NVA değerleri.
+*   **Trend Grafikleri:** Yıllar içindeki performans değişimini gösteren çizgisel grafikler.
+*   **Ürün Karşılaştırma:** En yüksek performansa sahip ürünlerin sıralaması.
+*   **Zaman Kırılımı:** Üretim zamanının (DT, UT, NVA) nasıl dağıldığını gösteren grafik.
 
-### Navigation
-*   **Home**: Returns to the global dashboard.
-*   **Menu**: Access profile settings and logout.
-*   **Admin Panel** (Admins only): Access system management tools.
+## 🤖 Intra Arc (Yapay Zeka Asistanı)
 
-## 👤 User Profile
+Sağ alt köşedeki butona tıklayarak **Intra Arc** ile sohbet edebilirsiniz.
+*   **Veri Analizi:** "2024 yılındaki en verimsiz ürün hangisi?" gibi sorular sorabilirsiniz.
+*   **Öneriler:** Verimliliği artırmak için yapay zekadan öneri alabilirsiniz.
+*   **Sistem Bilgisi:** Sistem özellikleri hakkında bilgi alabilirsiniz.
 
-*   **Change Password**: You can update your password from the Menu > Profile section.
-*   **Assigned Lines**: You will only see data for production lines assigned to you by an administrator.
+## 📄 PDF Raporlama
 
-## 📊 Understanding the Data
-
-*   **Yearly Data**: The dashboard shows data for the selected year (default is the current year).
-*   **Comparisons**: Charts may show comparisons with previous years to track improvement.
+Analitik sayfasındaki **"Export PDF"** butonu ile kapsamlı bir rapor alabilirsiniz.
+*   **Otomatik Analiz:** Rapor oluşturulurken yapay zeka verileri analiz eder ve bir yönetici özeti yazar.
+*   **Görsel Rapor:** Ekrandaki tüm grafikler ve tablolar rapora dahil edilir.
+*   **Paylaşım:** Rapor, Schneider Electric kurumsal kimliğine uygun formatta indirilir.
