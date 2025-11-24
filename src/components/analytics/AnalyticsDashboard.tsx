@@ -93,18 +93,21 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        message: `Lütfen ${selectedYear} yılı için aşağıdaki üretim verilerini analiz et ve PDF raporu için kısa, profesyonel bir yönetici özeti yaz (maksimum 3-4 cümle).
-                        
-                        Veriler:
+                        message: `GÖREV: ${selectedYear} yılı üretim verileri için PDF raporunda kullanılacak profesyonel bir yönetici özeti yaz.
+
+                        VERİLER:
                         - Ortalama SPS (Verimlilik): %${avgSPS.toFixed(1)}
                         - Ortalama Çevrim Süresi: ${avgCycleTime.toFixed(1)} dk
                         - Ortalama Uptime: %${avgUptime.toFixed(1)}
                         - Ortalama NVA (Değersiz Zaman): ${avgNVA.toFixed(1)} dk
-                        
-                        Trendler:
-                        - SPS Trendi: ${trendDirection} (%${trendPercentage.toFixed(1)})
-                        
-                        Lütfen verimlilik, darboğazlar ve iyileştirme fırsatları hakkında içgörü ver.`,
+                        - Trend: ${trendDirection} (%${trendPercentage.toFixed(1)})
+
+                        KURALLAR:
+                        1. SADECE analizi yaz. "Harika bir talep", "İşte analiziniz" gibi giriş/çıkış cümleleri KESİNLİKLE KULLANMA.
+                        2. Doğrudan konuya gir (Örn: "2027 yılı verileri gösteriyor ki...").
+                        3. 3-4 cümle ile sınırla.
+                        4. Profesyonel, veriye dayalı ve resmi bir dil kullan.
+                        5. Verimlilik, darboğazlar ve iyileştirme fırsatlarına odaklan.`,
                         history: [] // No history needed for this one-off request
                     })
                 });
