@@ -10,6 +10,7 @@ interface PDFExportOptions {
     avgCycleTime: number;
     avgUptime: number;
     avgNVA: number;
+    aiSummary?: string;
 }
 
 export async function exportAnalyticsToPDF(options: PDFExportOptions) {
@@ -103,7 +104,7 @@ export async function exportAnalyticsToPDF(options: PDFExportOptions) {
     const kpiBoxWidth = (pageWidth - 40) / 4;
     let kpiX = 20;
 
-    kpiData.forEach((kpi, index) => {
+    kpiData.forEach((kpi) => {
         // KPI Box
         pdf.setFillColor(255, 255, 255);
         pdf.roundedRect(kpiX, yPosition, kpiBoxWidth - 3, 25, 2, 2, 'FD');
@@ -128,6 +129,37 @@ export async function exportAnalyticsToPDF(options: PDFExportOptions) {
     });
 
     yPosition += 33;
+
+    // AI Summary Section
+    if (options.aiSummary) {
+        // AI Box Background
+        pdf.setFillColor(240, 253, 244); // Light green background
+        pdf.setDrawColor(61, 205, 88); // Green border
+
+        // Calculate height based on text
+        pdf.setFontSize(9);
+        const splitText = pdf.splitTextToSize(options.aiSummary, pageWidth - 40);
+        const textHeight = splitText.length * 5;
+        const boxHeight = textHeight + 20;
+
+        pdf.roundedRect(15, yPosition, pageWidth - 30, boxHeight, 3, 3, 'FD');
+
+        // AI Header
+        pdf.setFontSize(11);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(21, 128, 61); // Dark green
+        pdf.text('🤖 Intra Arc Analysis', 20, yPosition + 8);
+
+        // AI Content
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(55, 65, 81); // Dark gray
+        pdf.text(splitText, 20, yPosition + 16);
+
+        yPosition += boxHeight + 10;
+    } else {
+        yPosition += 5;
+    }
 
     // Instructions for charts
     pdf.setFontSize(10);

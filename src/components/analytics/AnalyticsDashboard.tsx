@@ -72,15 +72,63 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
     const handleExportPDF = async () => {
         setIsExporting(true);
         try {
+            // 1. Get AI Analysis
+            let aiAnalysis = '';
+            try {
+                // Calculate SPS trend manually
+                const sortedTrend = [...spsTrend].sort((a, b) => a.year - b.year);
+                let trendDirection = 'Stabil';
+                let trendPercentage = 0;
+
+                if (sortedTrend.length >= 2) {
+                    const first = sortedTrend[0].value;
+                    const last = sortedTrend[sortedTrend.length - 1].value;
+                    if (first !== 0) {
+                        trendPercentage = ((last - first) / first) * 100;
+                        trendDirection = trendPercentage > 0 ? 'Artışta' : trendPercentage < 0 ? 'Düşüşte' : 'Stabil';
+                    }
+                }
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `Lütfen ${selectedYear} yılı için aşağıdaki üretim verilerini analiz et ve PDF raporu için kısa, profesyonel bir yönetici özeti yaz (maksimum 3-4 cümle).
+                        
+                        Veriler:
+                        - Ortalama SPS (Verimlilik): %${avgSPS.toFixed(1)}
+                        - Ortalama Çevrim Süresi: ${avgCycleTime.toFixed(1)} dk
+                        - Ortalama Uptime: %${avgUptime.toFixed(1)}
+                        - Ortalama NVA (Değersiz Zaman): ${avgNVA.toFixed(1)} dk
+                        
+                        Trendler:
+                        - SPS Trendi: ${trendDirection} (%${trendPercentage.toFixed(1)})
+                        
+                        Lütfen verimlilik, darboğazlar ve iyileştirme fırsatları hakkında içgörü ver.`,
+                        history: [] // No history needed for this one-off request
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    aiAnalysis = data.response;
+                }
+            } catch (error) {
+                console.error('AI Analysis failed:', error);
+                // Continue without AI analysis if it fails
+            }
+
+            // 2. Generate PDF
             await exportAnalyticsToPDF({
                 title: 'Manufacturing Analytics Report',
                 subtitle: `Performance Analysis for Year ${selectedYear}`,
-                userName: 'System User', // This could come from session
+                userName: 'System User',
                 selectedYear,
                 avgSPS,
                 avgCycleTime,
                 avgUptime,
-                avgNVA
+                avgNVA,
+                aiSummary: aiAnalysis // Pass the AI summary
             });
         } catch (error) {
             console.error('PDF Export failed:', error);
@@ -124,7 +172,7 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
                             {isExporting ? (
                                 <>
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Exporting...
+                                    Analyzing & Exporting...
                                 </>
                             ) : (
                                 <>
