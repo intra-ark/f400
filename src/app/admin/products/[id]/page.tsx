@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -34,13 +34,7 @@ export default function EditProduct() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
-        if (id) {
-            fetchProduct();
-        }
-    }, [id]);
-
-    const fetchProduct = async () => {
+    const fetchProduct = useCallback(async () => {
         try {
             const res = await fetch(`/api/products/${id}`);
             if (!res.ok) throw new Error('Failed to fetch');
@@ -53,7 +47,13 @@ export default function EditProduct() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, router]);
+
+    useEffect(() => {
+        if (id) {
+            fetchProduct();
+        }
+    }, [id, fetchProduct]);
 
     const handleUpdateProduct = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 
 interface Line {
@@ -22,7 +21,6 @@ interface LineDrawerProps {
 
 export default function LineDrawer({ isOpen, onClose, lines, selectedLineId, onSelectLine, onOpenAuthorModal }: LineDrawerProps) {
     const { data: session } = useSession();
-    const isAdmin = session?.user?.role === 'ADMIN';
 
     return (
         <>
@@ -111,15 +109,13 @@ export default function LineDrawer({ isOpen, onClose, lines, selectedLineId, onS
                             </button>
                         </div>
                         {/* Admin Link */}
-                        {isAdmin && (
-                            <Link
-                                href="/admin"
-                                onClick={onClose}
-                                className="block w-full text-center py-3 px-4 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-bold transition-colors"
-                            >
-                                Admin Panel
-                            </Link>
-                        )}
+                        <Link
+                            href="/admin"
+                            onClick={onClose}
+                            className="block w-full text-center py-3 px-4 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-bold transition-colors"
+                        >
+                            Admin Panel
+                        </Link>
 
                         {/* Auth Buttons */}
                         {session ? (

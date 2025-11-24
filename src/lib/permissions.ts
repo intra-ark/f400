@@ -21,23 +21,23 @@ export async function canUserAccessLine(
     if (userRole === 'ADMIN') {
         return true;
     }
-    // Regular users can edit only assigned lines
-    const assignment = await prisma.userLine.findUnique({
+    // Regular users can edit only assigned lines via relation filter
+    const line = await prisma.line.findFirst({
         where: {
-            userId_lineId: {
-                userId,
-                lineId,
-            },
-        },
+            id: lineId,
+            assignedUsers: {
+                some: { userId }
+            }
+        }
     });
-    return assignment !== null;
+    return line !== null;
 }
 
 /**
  * Get all lines accessible (viewable) by a user
  * All users can view all lines; admins also can edit all.
  */
-export async function getUserLines(userId: number, userRole: string) {
+export async function getUserLines() {
     // Return all lines for any user
     return await prisma.line.findMany({
         orderBy: { id: 'asc' },
@@ -47,7 +47,7 @@ export async function getUserLines(userId: number, userRole: string) {
 /**
  * Get line IDs accessible by a user (viewable)
  */
-export async function getUserLineIds(userId: number, userRole: string): Promise<number[]> {
-    const lines = await getUserLines(userId, userRole);
+export async function getUserLineIds(): Promise<number[]> {
+    const lines = await getUserLines();
     return lines.map(line => line.id);
 }

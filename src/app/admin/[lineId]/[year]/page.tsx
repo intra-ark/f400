@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import Toast from '@/components/Toast';
 
 interface YearData {
     id?: number;
@@ -37,11 +38,7 @@ export default function LineYearManagement() {
     const [showAddProduct, setShowAddProduct] = useState(false);
     const [newProductName, setNewProductName] = useState('');
 
-    useEffect(() => {
-        fetchProducts();
-    }, [lineId]);
-
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         try {
             const res = await fetch(`/api/products?lineId=${lineId}`);
             const data = await res.json();
@@ -56,6 +53,16 @@ export default function LineYearManagement() {
         } finally {
             setLoading(false);
         }
+    }, [lineId, year]);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
+
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+    const showToast = (message: string, type: 'success' | 'error') => {
+        setToast({ message, type });
     };
 
     const handleAddProductToYear = async (productId: number) => {
@@ -80,15 +87,19 @@ export default function LineYearManagement() {
             });
 
             if (res.ok) {
-                alert('Product added to this year!');
+                showToast('Product added to this year!', 'success');
                 setShowAddProduct(false);
                 fetchProducts();
             } else {
-                throw new Error('Failed to add product');
+                if (res.status === 403) {
+                    showToast('Bu işlemi yapmaya yetkiniz yok!', 'error');
+                } else {
+                    throw new Error('Failed to add product');
+                }
             }
         } catch (error) {
             console.error(error);
-            alert('Failed to add product to year');
+            showToast('Failed to add product to year', 'error');
         }
     };
 
@@ -106,7 +117,13 @@ export default function LineYearManagement() {
                 }),
             });
 
-            if (!createRes.ok) throw new Error('Failed to create product');
+            if (!createRes.ok) {
+                if (createRes.status === 403) {
+                    showToast('Bu işlemi yapmaya yetkiniz yok!', 'error');
+                    return;
+                }
+                throw new Error('Failed to create product');
+            }
             const newProduct = await createRes.json();
 
             // 2. Add Year Data
@@ -114,7 +131,7 @@ export default function LineYearManagement() {
             setNewProductName('');
         } catch (error) {
             console.error(error);
-            alert('Failed to create and add product');
+            showToast('Failed to create and add product', 'error');
         }
     };
 
@@ -131,14 +148,18 @@ export default function LineYearManagement() {
             });
 
             if (res.ok) {
-                alert('Product removed from this year!');
+                showToast('Product removed from this year!', 'success');
                 fetchProducts();
             } else {
-                throw new Error('Failed to remove product');
+                if (res.status === 403) {
+                    showToast('Bu işlemi yapmaya yetkiniz yok!', 'error');
+                } else {
+                    throw new Error('Failed to remove product');
+                }
             }
         } catch (error) {
             console.error(error);
-            alert('Failed to remove product from year');
+            showToast('Failed to remove product from year', 'error');
         }
     };
 
@@ -155,14 +176,18 @@ export default function LineYearManagement() {
             });
 
             if (res.ok) {
-                alert('Data saved successfully!');
+                showToast('Data saved successfully!', 'success');
                 fetchProducts(); // Reload to ensure sync
             } else {
-                throw new Error('Failed to save');
+                if (res.status === 403) {
+                    showToast('Bu işlemi yapmaya yetkiniz yok!', 'error');
+                } else {
+                    throw new Error('Failed to save');
+                }
             }
         } catch (error) {
             console.error(error);
-            alert('Failed to save data');
+            showToast('Failed to save data', 'error');
         }
     };
 
@@ -446,6 +471,14 @@ export default function LineYearManagement() {
                     );
                 })}
             </div>
+
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </div>
     );
 }

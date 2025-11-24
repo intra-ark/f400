@@ -70,7 +70,7 @@ export default function AIAssistant({ selectedLineId }: AIAssistantProps) {
                     content: `Hata: ${data.error || 'Yanıt alınamadı'}`
                 }]);
             }
-        } catch (error) {
+        } catch {
             setMessages(prev => [...prev, {
                 role: 'assistant',
                 content: 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.'

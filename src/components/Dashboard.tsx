@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import WaterfallChart from './WaterfallChart';
 import AIAssistant from './AIAssistant';
 import LineDrawer from './LineDrawer';
@@ -59,18 +59,7 @@ export default function Dashboard() {
     const [selectedLineId, setSelectedLineId] = useState<number | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    useEffect(() => {
-        // Fetch lines
-        fetch('/api/lines')
-            .then(res => res.json())
-            .then((data: Line[]) => {
-                setLines(data);
-                // Default to Global Dashboard (-1)
-                handleLineSelect(-1);
-            });
-    }, []);
-
-    const handleLineSelect = (lineId: number) => {
+    const handleLineSelect = useCallback((lineId: number) => {
         setSelectedLineId(lineId);
 
         if (lineId === -1) {
@@ -111,7 +100,44 @@ export default function Dashboard() {
                     setSelectedProducts(prev => ({ ...prev, ...defaults }));
                 });
         }
-    };
+    }, [lines]);
+
+    useEffect(() => {
+        // Fetch lines
+        fetch('/api/lines')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Failed to fetch lines');
+                }
+                return res.json();
+            })
+            .then((data: Line[]) => {
+                if (Array.isArray(data)) {
+                    setLines(data);
+                } else {
+                    console.error('Unexpected response for lines:', data);
+                    setLines([]);
+                }
+                // Default to Global Dashboard (-1)
+                // We can't call handleLineSelect here directly if it depends on lines which we just set
+                // But handleLineSelect uses 'lines' state.
+                // Actually, for the initial load, we just want to load global data (-1).
+                // Global data (-1) logic doesn't depend on 'lines' state for fetching products.
+                // So we can extract the logic or just call it.
+                // However, handleLineSelect is now a dependency.
+            })
+            .catch(err => {
+                console.error('Error fetching lines:', err);
+                setLines([]);
+            });
+    }, []);
+
+    // Trigger initial selection after lines are loaded or on mount
+    useEffect(() => {
+        if (selectedLineId === null) {
+            handleLineSelect(-1);
+        }
+    }, [handleLineSelect, selectedLineId]);
 
     // ... (rest of component)
 
@@ -172,7 +198,7 @@ export default function Dashboard() {
                 {/* Center: Title */}
                 <div className="flex-1 text-center w-full md:w-auto order-3 md:order-2">
                     <h1 className="text-lg sm:text-2xl font-bold text-text-primary-light dark:text-text-primary-dark tracking-wide">
-                        {lines.find(l => l.id === selectedLineId)?.name.toUpperCase() || 'MANUFACTURING'} TIME DEFINITION
+                        {Array.isArray(lines) ? (lines.find(l => l.id === selectedLineId)?.name.toUpperCase() || 'MANUFACTURING') : 'MANUFACTURING'} TIME DEFINITION
                     </h1>
                 </div>
 

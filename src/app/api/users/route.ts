@@ -10,7 +10,7 @@ export async function GET() {
             select: { id: true, username: true, role: true, createdAt: true }
         });
         return NextResponse.json(users);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
     }
 }
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json({ id: user.id, username: user.username });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
     }
 }
@@ -56,7 +56,7 @@ export async function DELETE(request: Request) {
             where: { id: parseInt(id) },
         });
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 });
     }
 }
@@ -82,7 +82,7 @@ export async function PUT(request: Request) {
         });
 
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to update password' }, { status: 500 });
     }
 }

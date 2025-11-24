@@ -15,7 +15,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
         }
 
         return NextResponse.json(product);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
     }
 }
@@ -33,7 +33,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
         });
 
         return NextResponse.json(product);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
     }
 }
@@ -47,7 +47,7 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
         });
 
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
     }
 }

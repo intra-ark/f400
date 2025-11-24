@@ -7,29 +7,29 @@ import { getUserLines } from '@/lib/permissions';
 export async function GET(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-
-        if (!session?.user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const userId = parseInt(session.user.id);
-        const userRole = session.user.role;
-
-        // Check if admin wants all lines (for assignment modal)
         const { searchParams } = new URL(request.url);
         const fetchAll = searchParams.get('all') === 'true';
 
-        if (fetchAll && userRole === 'ADMIN') {
-            // Return all lines for admin assignment modal
+        // If no session (public user) -> return all lines (read‑only)
+        if (!session?.user) {
             const allLines = await prisma.line.findMany({
-                orderBy: { id: 'asc' }
+                orderBy: { id: 'asc' },
             });
             return NextResponse.json(allLines);
         }
 
-        // Get lines based on user permissions
-        const lines = await getUserLines(userId, userRole);
+        const userRole = session.user.role;
 
+        // Admin requesting all lines (e.g., assignment modal)
+        if (fetchAll && userRole === 'ADMIN') {
+            const allLines = await prisma.line.findMany({
+                orderBy: { id: 'asc' },
+            });
+            return NextResponse.json(allLines);
+        }
+
+        // Regular logged‑in user: return lines based on permissions
+        const lines = await getUserLines();
         return NextResponse.json(lines);
     } catch (error) {
         console.error('Error fetching lines:', error);

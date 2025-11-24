@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { canUserAccessLine } from '@/lib/permissions';
 
 // Security constants
 const MAX_ITEMS_PER_REQUEST = 100;
@@ -43,6 +44,20 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Invalid year' }, { status: 400 });
         }
 
+        if (!lineId) {
+            return NextResponse.json({ error: 'Line ID is required' }, { status: 400 });
+        }
+
+        const hasAccess = await canUserAccessLine(
+            parseInt(session.user.id),
+            parseInt(lineId),
+            session.user.role
+        );
+
+        if (!hasAccess) {
+            return NextResponse.json({ error: 'Access denied to this line' }, { status: 403 });
+        }
+
         // Validate data array
         if (!data || !Array.isArray(data)) {
             return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
@@ -81,9 +96,12 @@ export async function POST(request: Request) {
                 tsr: sanitizeStringInput(item.tsr),
             };
 
-            // Find product by exact name match
+            // Find product by exact name match within the authorized line
             let product = await prisma.product.findFirst({
-                where: { name: productName }
+                where: {
+                    name: productName,
+                    lineId: parseInt(lineId)
+                }
             });
 
             // If product doesn't exist and we have a lineId, create it
@@ -95,7 +113,7 @@ export async function POST(request: Request) {
                             lineId: parseInt(lineId)
                         }
                     });
-                } catch (createError) {
+                } catch {
                     errors.push(`Row ${i + 1}: Failed to create product "${productName}"`);
                     continue;
                 }

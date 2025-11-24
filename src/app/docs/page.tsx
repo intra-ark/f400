@@ -156,7 +156,7 @@ export default function DocsPage() {
                                         >
                                             <span className="material-icons-outlined text-4xl text-green-600 dark:text-green-400 mb-2">api</span>
                                             <h3 className="font-bold text-gray-900 dark:text-white mb-1">API Dokümantasyonu</h3>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">API kullanımı ve endpoint'ler</p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">API kullanımı ve endpoint&apos;ler</p>
                                         </button>
                                     </div>
                                 </div>
