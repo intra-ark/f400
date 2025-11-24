@@ -27,7 +27,6 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
     }, [products]);
 
     const [selectedYear, setSelectedYear] = useState(availableYears[0] || 2025);
-    const [selectedMetric, setSelectedMetric] = useState<keyof YearData>('kd');
     const [isExporting, setIsExporting] = useState(false);
 
     // Calculate KPIs
@@ -57,10 +56,10 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
     const uptimeTrend = useMemo(() => getMetricTrend(products, 'ut'), [products]);
     const nvaTrend = useMemo(() => getMetricTrend(products, 'nva'), [products]);
 
-    // Get top products
+    // Get top products by SPS
     const topProducts = useMemo(() =>
-        getTopProducts(products, selectedMetric, selectedYear, 10),
-        [products, selectedMetric, selectedYear]
+        getTopProducts(products, 'kd', selectedYear, 10),
+        [products, selectedYear]
     );
 
     // Time breakdown
@@ -116,16 +115,6 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
                             {availableYears.map(year => (
                                 <option key={year} value={year}>{year}</option>
                             ))}
-                        </select>
-                        <select
-                            value={selectedMetric}
-                            onChange={(e) => setSelectedMetric(e.target.value as keyof YearData)}
-                            className="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        >
-                            <option value="kd">SPS (KD)</option>
-                            <option value="dt">Cycle Time (DT)</option>
-                            <option value="ut">Uptime (UT)</option>
-                            <option value="nva">NVA</option>
                         </select>
                         <button
                             onClick={handleExportPDF}
@@ -223,10 +212,10 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div id="comparison-chart">
                     <ComparisonChart
-                        key={`${String(selectedMetric)}-${selectedYear}`}
+                        key={`sps-${selectedYear}`}
                         data={topProducts}
-                        title={`Top 10 Products by ${selectedMetric.toUpperCase()} (${selectedYear})`}
-                        yAxisLabel={selectedMetric.toUpperCase()}
+                        title={`Top 10 Products by SPS (${selectedYear})`}
+                        yAxisLabel="SPS (%)"
                         showRanking={true}
                     />
                 </div>
