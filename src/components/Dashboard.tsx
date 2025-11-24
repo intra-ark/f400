@@ -81,7 +81,8 @@ export default function Dashboard() {
         } else {
             const line = lines.find(l => l.id === lineId);
             if (line) {
-                setHeaderImage(line.headerImageUrl || '/schneider_f400_diagram.png');
+                // Don't use default - use actual URL or placeholder
+                setHeaderImage(line.headerImageUrl || 'https://placehold.co/2816x1536/F5F5F5/3DCD58?text=NO+IMAGE+UPLOADED');
             }
 
             // Fetch products for selected line

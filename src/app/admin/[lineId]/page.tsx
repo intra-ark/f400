@@ -19,6 +19,8 @@ export default function AdminLinePage() {
     const [imageUrl, setImageUrl] = useState('');
     const [updating, setUpdating] = useState(false);
     const [imageSettingsOpen, setImageSettingsOpen] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     useEffect(() => {
         if (lineId) {
@@ -39,27 +41,85 @@ export default function AdminLinePage() {
         }
     }, [lineId]);
 
-    const handleImageUpdate = async () => {
-        if (!line || !imageUrl.trim()) return;
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+            // Create preview URL
+            const previewUrl = URL.createObjectURL(file);
+            setImageUrl(previewUrl);
+        }
+    };
+
+    const handleImageUpload = async () => {
+        if (!line || !selectedFile) return;
+
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            const uploadResponse = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+                const error = await uploadResponse.json();
+                alert(`Upload failed: ${error.error}`);
+                return;
+            }
+
+            const { url } = await uploadResponse.json();
+
+            // Update line with new image URL
+            const response = await fetch(`/api/lines/${line.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ headerImageUrl: url })
+            });
+
+            if (response.ok) {
+                const updated = await response.json();
+                setLine(updated);
+                setImageUrl(url);
+                setSelectedFile(null);
+                alert('Header image uploaded successfully!');
+            } else {
+                alert('Failed to update header image');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error uploading image');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleRemoveImage = async () => {
+        if (!line) return;
+        if (!confirm('Are you sure you want to remove the header image?')) return;
 
         setUpdating(true);
         try {
             const response = await fetch(`/api/lines/${line.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ headerImageUrl: imageUrl.trim() })
+                body: JSON.stringify({ headerImageUrl: null })
             });
 
             if (response.ok) {
                 const updated = await response.json();
                 setLine(updated);
-                alert('Header image updated successfully!');
+                setImageUrl('');
+                setSelectedFile(null);
+                alert('Header image removed successfully!');
             } else {
-                alert('Failed to update header image');
+                alert('Failed to remove header image');
             }
         } catch (error) {
             console.error(error);
-            alert('Error updating header image');
+            alert('Error removing header image');
         } finally {
             setUpdating(false);
         }
@@ -116,36 +176,64 @@ export default function AdminLinePage() {
                 {imageSettingsOpen && (
                     <div className="px-6 pb-6 pt-2 border-t border-gray-200 dark:border-gray-700 animate-fade-in">
                         <div className="space-y-4">
+                            {/* File Upload */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Image URL
+                                    Upload Header Image
                                 </label>
-                                <input
-                                    type="text"
-                                    value={imageUrl}
-                                    onChange={(e) => setImageUrl(e.target.value)}
-                                    placeholder="/path/to/image.png or https://..."
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                                />
+                                <div className="flex items-center gap-4">
+                                    <label className="flex-1 cursor-pointer">
+                                        <div className="px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary dark:hover:border-primary transition-colors text-center">
+                                            <span className="material-icons-outlined text-gray-400 text-3xl mb-2">cloud_upload</span>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                {selectedFile ? selectedFile.name : 'Click to select image'}
+                                            </p>
+                                            <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 5MB</p>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
                             </div>
+
+                            {/* Preview */}
                             {imageUrl && (
                                 <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
                                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview:</p>
                                     <img
                                         src={imageUrl}
                                         alt="Header Preview"
-                                        className="max-h-32 rounded border border-gray-300 dark:border-gray-600"
+                                        className="max-h-48 rounded border border-gray-300 dark:border-gray-600"
                                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                     />
                                 </div>
                             )}
-                            <button
-                                onClick={handleImageUpdate}
-                                disabled={updating || !imageUrl.trim()}
-                                className="px-6 py-2 bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                            >
-                                {updating ? 'Updating...' : 'Update Header Image'}
-                            </button>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleImageUpload}
+                                    disabled={uploading || !selectedFile}
+                                    className="flex-1 px-6 py-2 bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                                >
+                                    <span className="material-icons-outlined text-sm">upload</span>
+                                    {uploading ? 'Uploading...' : 'Upload Image'}
+                                </button>
+                                {line?.headerImageUrl && (
+                                    <button
+                                        onClick={handleRemoveImage}
+                                        disabled={updating}
+                                        className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <span className="material-icons-outlined text-sm">delete</span>
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}

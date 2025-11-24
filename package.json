@@ -12,6 +12,7 @@
     "@google/genai": "^1.30.0",
     "@prisma/client": "^5.22.0",
     "@types/bcryptjs": "^2.4.6",
+    "@vercel/blob": "^2.0.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "mime": "^4.1.0",
