@@ -119,7 +119,7 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
                         </select>
                         <select
                             value={selectedMetric}
-                            onChange={(e) => setSelectedMetric(e.target.value)}
+                            onChange={(e) => setSelectedMetric(e.target.value as keyof YearData)}
                             className="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         >
                             <option value="kd">SPS (KD)</option>
@@ -245,7 +245,7 @@ export default function AnalyticsDashboard({ products }: AnalyticsDashboardProps
                     <li>• <strong>SPS (Standardized Production System):</strong> Overall manufacturing efficiency metric</li>
                     <li>• <strong>Cycle Time (DT):</strong> Time required to complete one production cycle</li>
                     <li>• <strong>Uptime (UT):</strong> Percentage of time machines are operational</li>
-                    <li>• <strong>NVA (Non-Value Added):</strong> Waste time that doesn't add value to the product</li>
+                    <li>• <strong>NVA (Non-Value Added):</strong> Waste time that doesn&apos;t add value to the product</li>
                 </ul>
             </div>
         </div>

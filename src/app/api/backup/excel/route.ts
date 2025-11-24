@@ -24,7 +24,7 @@ export async function GET() {
         const workbook = XLSX.utils.book_new();
 
         // Lines sheet
-        const linesData = lines.map(line => ({
+        const linesData = lines.map((line: Line) => ({
             'ID': line.id,
             'Name': line.name,
             'Slug': line.slug,
@@ -35,9 +35,9 @@ export async function GET() {
         XLSX.utils.book_append_sheet(workbook, linesSheet, 'Lines');
 
         // Products with Year Data sheet
-        const productsData: any[] = [];
-        products.forEach(product => {
-            product.yearData.forEach(yd => {
+        const productsData: Record<string, string | number>[] = [];
+        products.forEach((product: Product & { yearData: YearData[]; line: Line | null }) => {
+            product.yearData.forEach((yd: YearData) => {
                 productsData.push({
                     'Product ID': product.id,
                     'Product Name': product.name,

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
             }
 
             if (backup.data.lines?.length > 0) {
-                const linesData = backup.data.lines.map((line: any) => ({
+                const linesData = backup.data.lines.map((line: Record<string, unknown>) => ({
                     id: line.id,
                     name: line.name,
                     slug: line.slug,
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
             }
 
             if (backup.data.products?.length > 0) {
-                const productsData = backup.data.products.map((product: any) => ({
+                const productsData = backup.data.products.map((product: Record<string, unknown>) => ({
                     id: product.id,
                     name: product.name,
                     image: product.image,

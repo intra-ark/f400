@@ -22,7 +22,7 @@ export async function GET() {
         // Sort years descending
         const years = [...settings.availableYears].sort((a, b) => b - a);
         return NextResponse.json(years);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch years' }, { status: 500 });
     }
 }
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json(updated.availableYears.sort((a, b) => b - a));
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to add year' }, { status: 500 });
     }
 }
@@ -82,7 +82,7 @@ export async function DELETE(request: Request) {
         });
 
         return NextResponse.json(updated.availableYears.sort((a, b) => b - a));
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete year' }, { status: 500 });
     }
 }
