@@ -94,6 +94,67 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleExportBackup = async () => {
+        try {
+            const response = await fetch('/api/backup/export');
+            if (!response.ok) {
+                throw new Error('Failed to export backup');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `set-sps-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            alert('Backup exported successfully!');
+        } catch (error) {
+            console.error(error);
+            alert('Failed to export backup');
+        }
+    };
+
+    const handleImportBackup = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!confirm('⚠️ This will replace ALL current data (except users). Are you sure you want to continue?')) {
+            e.target.value = '';
+            return;
+        }
+
+        try {
+            const text = await file.text();
+            const backup = JSON.parse(text);
+
+            const response = await fetch('/api/backup/import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(backup),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.details || 'Failed to import backup');
+            }
+
+            const result = await response.json();
+            alert(`Backup imported successfully!\n\nImported:\n- Lines: ${result.importedCounts.lines}\n- Products: ${result.importedCounts.products}\n- Year Data: ${result.importedCounts.yearData}\n- User Lines: ${result.importedCounts.userLines}`);
+
+            // Refresh the page to show updated data
+            window.location.reload();
+        } catch (error) {
+            console.error(error);
+            alert(`Failed to import backup: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            e.target.value = '';
+        }
+    };
+
     if (loading) return <div className="p-8 text-center">Loading...</div>;
 
     // Filter lines based on assignment
@@ -113,6 +174,43 @@ export default function AdminDashboard() {
                     </Link>
                 </div>
             </header>
+
+            {/* Database Backup/Import Section - Only for Admins */}
+            {isAdmin && (
+                <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-6 border border-blue-200 dark:border-gray-700">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="material-icons-outlined text-3xl text-blue-600 dark:text-blue-400">backup</span>
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Database Management</h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Backup and restore your database</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-4 flex-wrap">
+                        <button
+                            onClick={handleExportBackup}
+                            className="flex-1 min-w-[200px] px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2"
+                        >
+                            <span className="material-icons-outlined">download</span>
+                            Export Backup
+                        </button>
+                        <label className="flex-1 min-w-[200px]">
+                            <div className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                <span className="material-icons-outlined">upload</span>
+                                Import Backup
+                            </div>
+                            <input
+                                type="file"
+                                accept=".json"
+                                onChange={handleImportBackup}
+                                className="hidden"
+                            />
+                        </label>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+                        ⚠️ Warning: Importing will replace all current data (except users). Make sure to export first!
+                    </p>
+                </div>
+            )}
 
             {/* Assigned Lines Section */}
             <div className="mb-12">
