@@ -13,8 +13,35 @@ interface PDFExportOptions {
     aiSummary?: string;
 }
 
+// Helper to load font
+async function loadFont(url: string): Promise<string> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64 = (reader.result as string).split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
 export async function exportAnalyticsToPDF(options: PDFExportOptions) {
     const pdf = new jsPDF('p', 'mm', 'a4');
+
+    // Load Turkish-supporting font (Roboto)
+    try {
+        const fontBase64 = await loadFont('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf');
+        pdf.addFileToVFS('Roboto-Regular.ttf', fontBase64);
+        pdf.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+        pdf.setFont('Roboto');
+    } catch (error) {
+        console.error('Failed to load custom font, falling back to helvetica', error);
+        pdf.setFont('helvetica');
+    }
+
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     let yPosition = 20;
@@ -24,17 +51,18 @@ export async function exportAnalyticsToPDF(options: PDFExportOptions) {
     pdf.rect(15, 10, 12, 12, 'F');
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'bold');
+    // pdf.setFont('helvetica', 'bold'); // Remove explicit font setting to keep Roboto if loaded
+    pdf.setFont(pdf.getFont().fontName, 'bold'); // Use current font
     pdf.text('SE', 21, 18, { align: 'center' });
 
     // Add Header
     pdf.setTextColor(0, 0, 0);
     pdf.setFontSize(20);
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont(pdf.getFont().fontName, 'bold');
     pdf.text('Schneider Electric', 30, 18);
 
     pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFont(pdf.getFont().fontName, 'normal');
     pdf.setTextColor(100, 100, 100);
     pdf.text('SET SPS Manufacturing Analytics', 30, 23);
 
@@ -47,14 +75,14 @@ export async function exportAnalyticsToPDF(options: PDFExportOptions) {
 
     // Report Title
     pdf.setFontSize(16);
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont(pdf.getFont().fontName, 'bold');
     pdf.setTextColor(0, 0, 0);
     pdf.text(options.title, 15, yPosition);
     yPosition += 8;
 
     if (options.subtitle) {
         pdf.setFontSize(11);
-        pdf.setFont('helvetica', 'normal');
+        pdf.setFont(pdf.getFont().fontName, 'normal');
         pdf.setTextColor(100, 100, 100);
         pdf.text(options.subtitle, 15, yPosition);
         yPosition += 8;
@@ -85,13 +113,13 @@ export async function exportAnalyticsToPDF(options: PDFExportOptions) {
     pdf.roundedRect(15, yPosition, pageWidth - 30, 45, 3, 3, 'F');
 
     pdf.setFontSize(12);
-    pdf.setFont('helvetica', 'bold');
+    pdf.setFont(pdf.getFont().fontName, 'bold');
     pdf.setTextColor(0, 0, 0);
     pdf.text('📊 Executive Summary', 20, yPosition + 7);
 
     yPosition += 12;
     pdf.setFontSize(9);
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFont(pdf.getFont().fontName, 'normal');
 
     // KPI Grid
     const kpiData = [
@@ -121,10 +149,10 @@ export async function exportAnalyticsToPDF(options: PDFExportOptions) {
         // Value
         pdf.setTextColor(0, 0, 0);
         pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'bold');
+        pdf.setFont(pdf.getFont().fontName, 'bold');
         pdf.text(kpi.value, kpiX + (kpiBoxWidth - 3) / 2, yPosition + 18, { align: 'center' });
 
-        pdf.setFont('helvetica', 'normal');
+        pdf.setFont(pdf.getFont().fontName, 'normal');
         kpiX += kpiBoxWidth;
     });
 
@@ -146,13 +174,13 @@ export async function exportAnalyticsToPDF(options: PDFExportOptions) {
 
         // AI Header
         pdf.setFontSize(11);
-        pdf.setFont('helvetica', 'bold');
+        pdf.setFont(pdf.getFont().fontName, 'bold');
         pdf.setTextColor(21, 128, 61); // Dark green
         pdf.text('🤖 Intra Arc Analysis', 20, yPosition + 8);
 
         // AI Content
         pdf.setFontSize(9);
-        pdf.setFont('helvetica', 'normal');
+        pdf.setFont(pdf.getFont().fontName, 'normal');
         pdf.setTextColor(55, 65, 81); // Dark gray
         pdf.text(splitText, 20, yPosition + 16);
 
