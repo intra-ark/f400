@@ -30,7 +30,7 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_USER')) {
+        if (!session?.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_USER')) {
+        if (!session?.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 

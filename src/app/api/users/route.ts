@@ -83,10 +83,10 @@ export async function PUT(request: Request) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        // SUPER USER PROTECTION: "Ahmet Mersin" cannot have their role changed by anyone
+        // SUPER ADMIN PROTECTION: "Ahmet Mersin" cannot have their role changed by anyone
         if (targetUser.username.toLowerCase() === 'ahmet mersin' && role !== undefined) {
             return NextResponse.json({
-                error: 'Cannot modify Super User role'
+                error: 'Cannot modify Super Admin role'
             }, { status: 403 });
         }
 

@@ -18,7 +18,7 @@ Her hat için ürünler ve bu ürünlerin yıllık verileri yönetilebilir:
 *   **Rol Atama:** 
     *   **Admin:** Tam yetki.
     *   **User:** Sadece görüntüleme yetkisi.
-    *   **Super User:** Atandığı hatlarda düzenleme yetkisi.
+    *   **Super Admin:** Atandığı hatlarda düzenleme yetkisi.
 *   **Hat Atama:** Kullanıcıların sadece belirli hatları görmesini veya yönetmesini sağlayabilirsiniz.
 
 ## ⚙️ Sistem Ayarları

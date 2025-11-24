@@ -212,9 +212,9 @@ export default function UsersPage() {
     };
 
     const openRoleChangeModal = (userId: number, currentRole: string, username: string) => {
-        // Prevent changing Super User role
+        // Prevent changing Super Admin role
         if (username.toLowerCase() === 'ahmet mersin') {
-            showToastNotification('Cannot modify Super User role', 'error');
+            showToastNotification('Cannot modify Super Admin role', 'error');
             return;
         }
 
@@ -321,7 +321,7 @@ export default function UsersPage() {
                                         )}
                                         {user.username.toLowerCase() === 'ahmet mersin' && (
                                             <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded-full font-semibold">
-                                                SUPER USER
+                                                SUPER ADMIN
                                             </span>
                                         )}
                                     </div>
@@ -467,8 +467,8 @@ export default function UsersPage() {
                             </p>
                             <div className="space-y-3">
                                 <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedRole === 'USER'
-                                        ? 'border-primary bg-green-50 dark:bg-green-900/20'
-                                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                    ? 'border-primary bg-green-50 dark:bg-green-900/20'
+                                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                                     }`}>
                                     <input
                                         type="radio"
@@ -487,8 +487,8 @@ export default function UsersPage() {
                                 </label>
 
                                 <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedRole === 'ADMIN'
-                                        ? 'border-primary bg-green-50 dark:bg-green-900/20'
-                                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                    ? 'border-primary bg-green-50 dark:bg-green-900/20'
+                                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                                     }`}>
                                     <input
                                         type="radio"
