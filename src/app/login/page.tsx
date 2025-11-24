@@ -28,44 +28,64 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100 dark:border-gray-700">
-                <h1 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Admin Login</h1>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
+            <div className="w-full max-w-md space-y-6">
+                {/* Security Banner */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-t-[5px] border-[#3dcd58] p-8 text-center">
+                    <div className="text-5xl mb-4">🔒</div>
+                    <h2 className="text-xl font-bold text-[#3dcd58] uppercase tracking-wide mb-4">
+                        Yetkili Erişim
+                    </h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                        Bu sistem <span className="font-bold text-gray-800 dark:text-white">Schneider Electric</span> mülkiyetindedir ve yalnızca yetkili iş kullanımı için tasarlanmıştır.
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
+                        Bu sistemdeki tüm aktiviteler güvenlik amaçlı kaydedilir ve izlenir. Yetkisiz erişim veya kötüye kullanım kesinlikle yasaktır.
+                    </p>
+                    <div className="text-xs text-gray-400 dark:text-gray-500 border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
+                        Giriş yaparak Kabul Edilebilir Kullanım Politikasını kabul etmiş olursunuz.
+                    </div>
+                </div>
 
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                        <span className="block sm:inline">{error}</span>
-                    </div>
-                )}
+                {/* Login Form */}
+                <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+                    <h1 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Admin Login</h1>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-primary hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200"
-                    >
-                        Sign In
-                    </button>
-                </form>
+                    {error && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                            <span className="block sm:inline">{error}</span>
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#3dcd58] focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#3dcd58] focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="w-full bg-[#3dcd58] hover:bg-[#34b84c] text-white font-bold py-2 px-4 rounded-lg transition duration-200"
+                        >
+                            Sign In
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );

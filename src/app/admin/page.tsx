@@ -272,8 +272,21 @@ export default function AdminDashboard() {
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
-            <header className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h1>
+            {/* Schneider Electric Branding Header */}
+            <div className="mb-8 text-center">
+                <div className="flex items-center justify-center gap-3 mb-2">
+                    <div className="w-12 h-12 bg-[#3dcd58] rounded-lg flex items-center justify-center">
+                        <span className="text-white text-2xl font-bold">SE</span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                        Schneider Electric
+                    </h1>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Production Management System</p>
+            </div>
+
+            <header className="flex justify-between items-center mb-8 border-b-2 border-[#3dcd58] pb-4">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h2>
                 <div className="flex gap-4 items-center">
                     {/* Database Management - Minimal Button */}
                     {isAdmin && (
