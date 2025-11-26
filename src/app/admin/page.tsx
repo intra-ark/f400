@@ -5,26 +5,19 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Toast from '@/components/Toast';
 import Modal from '@/components/Modal';
-
-interface Line {
-    id: number;
-    name: string;
-    slug: string;
-    isAssigned?: boolean;
-}
+import YearManager from '@/components/admin/YearManager';
+import AddLineModal from '@/components/admin/AddLineModal';
+import BackupMenu from '@/components/admin/BackupMenu';
+import { Line } from '@/lib/utils';
 
 export default function AdminDashboard() {
     const { data: session } = useSession();
     const [lines, setLines] = useState<Line[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [newLineName, setNewLineName] = useState('');
-    const [newLineSlug, setNewLineSlug] = useState('');
     const [creating, setCreating] = useState(false);
-    const [showBackupMenu, setShowBackupMenu] = useState(false);
     const [showYearModal, setShowYearModal] = useState(false);
     const [availableYears, setAvailableYears] = useState<number[]>([]);
-    const [newYearInput, setNewYearInput] = useState('');
 
     // Toast State
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; visible: boolean }>({
@@ -69,7 +62,10 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         fetchLines();
-    }, []);
+        if (isAdmin) {
+            fetchYears();
+        }
+    }, [isAdmin]);
 
     const fetchLines = () => {
         fetch('/api/lines')
@@ -96,30 +92,7 @@ export default function AdminDashboard() {
         }
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (showBackupMenu && !(event.target as Element).closest('.backup-menu-container')) {
-                setShowBackupMenu(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [showBackupMenu]);
-
-    useEffect(() => {
-        fetchLines();
-        if (isAdmin) {
-            fetchYears();
-        }
-    }, [isAdmin]);
-
-    const handleAddYear = async () => {
-        const year = parseInt(newYearInput);
-        if (!year || isNaN(year)) return;
-
+    const handleAddYear = async (year: number) => {
         try {
             const res = await fetch('/api/settings/years', {
                 method: 'POST',
@@ -130,7 +103,6 @@ export default function AdminDashboard() {
             if (res.ok) {
                 const updated = await res.json();
                 setAvailableYears(updated);
-                setNewYearInput('');
                 showToast('Year added successfully!');
             } else {
                 const error = await res.json();
@@ -170,8 +142,8 @@ export default function AdminDashboard() {
         );
     };
 
-    const handleCreateLine = async () => {
-        if (!newLineName.trim() || !newLineSlug.trim()) {
+    const handleCreateLine = async (name: string, slug: string) => {
+        if (!name.trim() || !slug.trim()) {
             showToast('Please enter both name and slug', 'error');
             return;
         }
@@ -182,15 +154,13 @@ export default function AdminDashboard() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: newLineName.trim(),
-                    slug: newLineSlug.trim()
+                    name: name.trim(),
+                    slug: slug.trim()
                 })
             });
 
             if (response.ok) {
                 setShowAddModal(false);
-                setNewLineName('');
-                setNewLineSlug('');
                 fetchLines();
                 showToast('Line created successfully!');
             } else {
@@ -317,6 +287,44 @@ export default function AdminDashboard() {
         );
     };
 
+    const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        showConfirm(
+            'Import Excel Data',
+            '⚠️ This will update existing lines/products and create new ones. It will NOT delete existing data. Continue?',
+            async () => {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/api/backup/import-excel', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.details || error.error || 'Failed to import Excel');
+                    }
+
+                    const result = await response.json();
+                    showToast(`Excel imported successfully! Lines: ${result.importedCounts.lines}, Products: ${result.importedCounts.products}`, 'success');
+
+                    // Refresh the page to show updated data
+                    setTimeout(() => window.location.reload(), 2000);
+                } catch (error) {
+                    console.error(error);
+                    showToast(`Failed to import Excel: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+                } finally {
+                    e.target.value = '';
+                }
+            },
+            'warning'
+        );
+    };
+
     if (loading) return <div className="p-8 text-center">Loading...</div>;
 
     // Filter lines based on assignment
@@ -369,55 +377,12 @@ export default function AdminDashboard() {
                                 <span className="material-icons-outlined text-gray-600 dark:text-gray-400">calendar_today</span>
                             </button>
 
-                            <div className="relative group backup-menu-container">
-                                <button
-                                    onClick={() => setShowBackupMenu(!showBackupMenu)}
-                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                                    title="Database Management"
-                                >
-                                    <span className="material-icons-outlined text-gray-600 dark:text-gray-400">storage</span>
-                                </button>
-
-                                {/* Dropdown Menu */}
-                                {showBackupMenu && (
-                                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
-                                        <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-                                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Database</p>
-                                        </div>
-                                        <div className="p-2">
-                                            <button
-                                                onClick={() => { handleExportBackup(); setShowBackupMenu(false); }}
-                                                className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex items-center gap-2 text-sm"
-                                            >
-                                                <span className="material-icons-outlined text-blue-600 text-base">download</span>
-                                                <span className="text-gray-700 dark:text-gray-300">Export JSON</span>
-                                            </button>
-                                            <button
-                                                onClick={() => { handleExportExcel(); setShowBackupMenu(false); }}
-                                                className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex items-center gap-2 text-sm"
-                                            >
-                                                <span className="material-icons-outlined text-green-600 text-base">table_chart</span>
-                                                <span className="text-gray-700 dark:text-gray-300">Export Excel</span>
-                                            </button>
-                                            <label className="w-full">
-                                                <div className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors flex items-center gap-2 text-sm cursor-pointer">
-                                                    <span className="material-icons-outlined text-orange-600 text-base">upload</span>
-                                                    <span className="text-gray-700 dark:text-gray-300">Import JSON</span>
-                                                </div>
-                                                <input
-                                                    type="file"
-                                                    accept=".json"
-                                                    onChange={(e) => { handleImportBackup(e); setShowBackupMenu(false); }}
-                                                    className="hidden"
-                                                />
-                                            </label>
-                                        </div>
-                                        <div className="p-2 border-t border-gray-200 dark:border-gray-700">
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 px-2">Import replaces all data</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                            <BackupMenu
+                                onExportBackup={handleExportBackup}
+                                onExportExcel={handleExportExcel}
+                                onImportBackup={handleImportBackup}
+                                onImportExcel={handleImportExcel}
+                            />
                         </div>
                     )}
 
@@ -506,118 +471,21 @@ export default function AdminDashboard() {
 
             {/* Year Management Modal */}
             {showYearModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-white">Manage Years</h3>
-                            <button
-                                onClick={() => setShowYearModal(false)}
-                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                            >
-                                <span className="material-icons-outlined">close</span>
-                            </button>
-                        </div>
-
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Add New Year
-                            </label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="number"
-                                    min="2000"
-                                    max="2100"
-                                    value={newYearInput}
-                                    onChange={(e) => setNewYearInput(e.target.value)}
-                                    placeholder="e.g. 2028"
-                                    className="flex-1 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent"
-                                />
-                                <button
-                                    onClick={handleAddYear}
-                                    disabled={!newYearInput}
-                                    className="bg-green-600 hover:bg-green-700 text-white font-bold px-4 rounded-lg disabled:opacity-50 transition-colors"
-                                >
-                                    Add
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">Available Years</h4>
-                            <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {availableYears.map(year => (
-                                    <div key={year} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                        <span className="font-semibold text-gray-800 dark:text-white">{year}</span>
-                                        <button
-                                            onClick={() => handleDeleteYear(year)}
-                                            className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                                            title="Delete Year"
-                                        >
-                                            <span className="material-icons-outlined text-sm">delete</span>
-                                        </button>
-                                    </div>
-                                ))}
-                                {availableYears.length === 0 && (
-                                    <p className="text-gray-500 text-center py-4">No years configured.</p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <YearManager
+                    availableYears={availableYears}
+                    onAddYear={handleAddYear}
+                    onDeleteYear={handleDeleteYear}
+                    onClose={() => setShowYearModal(false)}
+                />
             )}
 
             {/* Add Line Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
-                        <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Add New Production Line</h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Line Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={newLineName}
-                                    onChange={(e) => setNewLineName(e.target.value)}
-                                    placeholder="e.g., Assembly Line 1"
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Slug (URL-friendly identifier)
-                                </label>
-                                <input
-                                    type="text"
-                                    value={newLineSlug}
-                                    onChange={(e) => setNewLineSlug(e.target.value)}
-                                    placeholder="e.g., assembly-line-1"
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
-                                />
-                            </div>
-                        </div>
-                        <div className="flex gap-4 mt-6">
-                            <button
-                                onClick={handleCreateLine}
-                                disabled={creating}
-                                className="flex-1 px-4 py-2 bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                            >
-                                {creating ? 'Creating...' : 'Create Line'}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowAddModal(false);
-                                    setNewLineName('');
-                                    setNewLineSlug('');
-                                }}
-                                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <AddLineModal
+                    onCreate={handleCreateLine}
+                    onClose={() => setShowAddModal(false)}
+                    creating={creating}
+                />
             )}
         </div>
     );

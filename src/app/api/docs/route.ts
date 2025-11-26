@@ -18,10 +18,6 @@ export async function GET(request: NextRequest) {
 
         const filePath = path.join(process.cwd(), 'docs', `${file}.md`);
 
-        console.log('Requested file:', file);
-        console.log('Full path:', filePath);
-        console.log('File exists:', fs.existsSync(filePath));
-
         if (!fs.existsSync(filePath)) {
             return NextResponse.json({ error: 'File not found' }, { status: 404 });
         }

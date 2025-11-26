@@ -46,20 +46,23 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'User ID and line IDs array are required' }, { status: 400 });
         }
 
-        // Delete existing assignments
-        await prisma.userLine.deleteMany({
-            where: { userId: parseInt(userId) }
-        });
-
-        // Create new assignments
-        if (lineIds.length > 0) {
-            await prisma.userLine.createMany({
-                data: lineIds.map(lineId => ({
-                    userId: parseInt(userId),
-                    lineId: parseInt(lineId)
-                }))
+        // Use transaction for atomic update
+        await prisma.$transaction(async (tx) => {
+            // Delete existing assignments
+            await tx.userLine.deleteMany({
+                where: { userId: parseInt(userId) }
             });
-        }
+
+            // Create new assignments
+            if (lineIds.length > 0) {
+                await tx.userLine.createMany({
+                    data: lineIds.map((lineId: string) => ({
+                        userId: parseInt(userId),
+                        lineId: parseInt(lineId)
+                    }))
+                });
+            }
+        });
 
         // Fetch updated assignments
         const assignments = await prisma.userLine.findMany({

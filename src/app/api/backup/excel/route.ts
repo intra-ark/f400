@@ -32,7 +32,11 @@ export async function GET() {
             'Header Image': line.headerImageUrl || 'N/A',
             'Created At': new Date(line.createdAt).toLocaleDateString(),
         }));
-        const linesSheet = XLSX.utils.json_to_sheet(linesData);
+
+        // Ensure headers exist even if data is empty
+        const linesSheet = XLSX.utils.json_to_sheet(linesData.length > 0 ? linesData : [], {
+            header: ['ID', 'Name', 'Slug', 'Header Image', 'Created At']
+        });
         XLSX.utils.book_append_sheet(workbook, linesSheet, 'Lines');
 
         // Products with Year Data sheet
@@ -56,7 +60,16 @@ export async function GET() {
                 });
             });
         });
-        const productsSheet = XLSX.utils.json_to_sheet(productsData);
+
+        // Ensure headers exist even if data is empty
+        const productsSheet = XLSX.utils.json_to_sheet(productsData.length > 0 ? productsData : [], {
+            header: [
+                'Product ID', 'Product Name', 'Line', 'Year',
+                'DT', 'UT', 'NVA',
+                'KD (%)', 'KE (%)', 'KER (%)', 'KSR (%)',
+                'OT', 'TSR'
+            ]
+        });
         XLSX.utils.book_append_sheet(workbook, productsSheet, 'Products & Year Data');
 
         // Generate Excel file

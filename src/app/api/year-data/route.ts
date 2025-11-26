@@ -18,6 +18,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
         }
 
+        if (!year || isNaN(parseInt(year))) {
+            return NextResponse.json({ error: 'Valid Year is required' }, { status: 400 });
+        }
+
         // Fetch product to get lineId
         const product = await prisma.product.findUnique({
             where: { id: parseInt(productId) },

@@ -49,6 +49,8 @@ model YearData {
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, year])
+  @@index([year])
+  @@index([productId])
 }
 
 model User {

@@ -26,6 +26,14 @@ export interface Line {
     name: string;
     slug: string;
     headerImageUrl: string | null;
+    isAssigned?: boolean; // Optional for UI logic
+}
+
+export interface User {
+    id: number;
+    username: string;
+    role: string;
+    createdAt: string;
 }
 
 export interface StarProduct {

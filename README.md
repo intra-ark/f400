@@ -1,49 +1,54 @@
-# SET SPS - Manufacturing Time Definition System
+# Schneider Electric - SET SPS (Production Management System)
 
-SET SPS is a modern web application designed for Schneider Electric to manage and analyze manufacturing time definitions (SPS) across production lines. It provides a comprehensive dashboard for visualizing efficiency metrics (KD, UT, NVA, etc.) and an admin panel for managing lines, products, and users.
+![Schneider Electric](https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Schneider_Electric_2007.svg/2560px-Schneider_Electric_2007.svg.png)
 
-![Dashboard Preview](/schneider_f400_diagram.png)
+## Overview
 
-## 🚀 Key Features
+**SET SPS** is a comprehensive Production Management System designed for Schneider Electric. It provides advanced analytics, time definition tracking, and performance monitoring for manufacturing lines. The system enables real-time visualization of Key Performance Indicators (KPIs) such as KD, DT, UT, NVA, and OTR, helping plant managers and engineers optimize production efficiency.
 
-*   **Interactive Dashboard**: Visualize SPS data with dynamic charts and year-over-year comparisons.
-*   **Role-Based Access Control**:
-    *   **Super User**: Full access, immutable role.
-    *   **Admin**: Manage lines, products, users, and system settings.
-    *   **User**: View assigned lines and read-only data.
-*   **Line Management**:
-    *   Create, update, and delete production lines.
-    *   **Image Upload**: Upload custom header images for each line (powered by Vercel Blob).
-    *   **User Assignment**: Assign specific users to specific lines.
-*   **Data Management**:
-    *   **Excel Export**: Export all system data to Excel.
-    *   **Backup & Restore**: Full JSON database backup and restore functionality.
-*   **Performance**: Optimized for speed with efficient database queries and loading states.
+## Key Features
 
-## 🛠️ Technology Stack
+### 📊 Advanced Analytics
+- **Global Dashboard**: Real-time overview of all production lines with aggregated metrics.
+- **Waterfall Charts**: Visual representation of time losses and efficiency drops.
+- **Trend Analysis**: Historical data tracking to identify long-term performance trends.
+- **AI-Powered Insights**: Integrated AI assistant provides actionable insights based on production data.
 
-*   **Framework**: [Next.js 14+ (App Router)](https://nextjs.org/)
-*   **Language**: [TypeScript](https://www.typescriptlang.org/)
-*   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-*   **Database**: [PostgreSQL](https://www.postgresql.org/) (via Neon/Vercel Postgres)
-*   **ORM**: [Prisma](https://www.prisma.io/)
-*   **Authentication**: [NextAuth.js](https://next-auth.js.org/)
-*   **Storage**: [Vercel Blob](https://vercel.com/docs/storage/vercel-blob)
-*   **Deployment**: [Vercel](https://vercel.com/)
+### 🏭 Line Management
+- **Dynamic Line Configuration**: Create, edit, and manage production lines effortlessly.
+- **Product Management**: Track products associated with specific lines.
+- **Yearly Data Tracking**: Manage performance data across different fiscal years.
 
-## 🏁 Getting Started
+### 👥 User & Role Management
+- **Role-Based Access Control (RBAC)**: Secure access for Admins and Standard Users.
+- **Line Assignments**: Granular permission system to assign specific lines to specific users.
+- **Secure Authentication**: Robust login system powered by NextAuth.js.
+
+### 🛡️ Security & Reliability
+- **Data Integrity**: Transactional database operations ensure data consistency.
+- **Backup & Restore**: Full JSON and Excel import/export capabilities for data safety.
+- **Security Headers**: Implemented strict HTTP security headers for protection against web vulnerabilities.
+
+## Tech Stack
+
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) with [Prisma ORM](https://www.prisma.io/)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Charts**: [Chart.js](https://www.chartjs.org/) / [Recharts](https://recharts.org/)
+
+## Getting Started
 
 ### Prerequisites
-
-*   Node.js 18+
-*   npm or yarn
-*   PostgreSQL database (local or cloud)
+- Node.js (v18 or higher)
+- PostgreSQL Database
 
 ### Installation
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/intra-ark/set-sps.git
+    git clone https://github.com/your-repo/set-sps.git
     cd set-sps
     ```
 
@@ -52,53 +57,37 @@ SET SPS is a modern web application designed for Schneider Electric to manage an
     npm install
     ```
 
-3.  **Set up Environment Variables**
+3.  **Environment Setup**
     Create a `.env` file in the root directory:
     ```env
-    # Database
-    POSTGRES_PRISMA_URL="postgresql://user:password@host:port/dbname?sslmode=require"
-    POSTGRES_URL_NON_POOLING="..."
-
-    # NextAuth
-    NEXTAUTH_URL="http://localhost:3000"
+    DATABASE_URL="postgresql://user:password@localhost:5432/setsps"
     NEXTAUTH_SECRET="your-super-secret-key"
-
-    # Vercel Blob (for image uploads)
-    BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
+    NEXTAUTH_URL="http://localhost:3000"
     ```
 
-4.  **Initialize Database**
+4.  **Database Setup**
     ```bash
     npx prisma generate
-    npx prisma migrate dev
+    npx prisma db push
     ```
 
-5.  **Seed Database (Optional)**
-    ```bash
-    npx prisma db seed
-    ```
-
-6.  **Run Development Server**
+5.  **Run the application**
     ```bash
     npm run dev
     ```
 
-    Open [http://localhost:3000](http://localhost:3000) in your browser.
+## Deployment
 
-## 📚 Documentation
+The application is optimized for deployment on [Vercel](https://vercel.com/).
 
-For more detailed information, check the `docs/` folder:
+1.  Push your code to a Git repository.
+2.  Import the project into Vercel.
+3.  Configure the Environment Variables in Vercel settings.
+4.  Deploy!
 
-*   [Architecture & Tech Stack](docs/01-architecture.md)
-*   [User Guide](docs/02-user-guide.md)
-*   [Admin Guide](docs/03-admin-guide.md)
-*   [API Reference](docs/04-api-reference.md)
-*   [Deployment](docs/05-deployment.md)
+## License
 
-## 🤝 Contributing
+This project is proprietary software developed for **Schneider Electric**. Unauthorized copying, modification, or distribution is strictly prohibited.
 
-1.  Fork the repository
-2.  Create your feature branch (`git checkout -b feature/amazing-feature`)
-3.  Commit your changes (`git commit -m 'feat: Add amazing feature'`)
-4.  Push to the branch (`git push origin feature/amazing-feature`)
-5.  Open a Pull Request
+---
+*Developed by Ahmet Mersin*
