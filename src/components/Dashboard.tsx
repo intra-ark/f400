@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 import WaterfallChart from './WaterfallChart';
 import AIAssistant from './AIAssistant';
-import LineDrawer from './LineDrawer';
+import DropdownMenu from './DropdownMenu';
 import AnalyticsDashboard from './analytics/AnalyticsDashboard';
 import { findStarProduct, formatKDPercent, calculateGlobalStats, type StarProduct, type Line, type Product } from '@/lib/utils';
 import GlobalStats from './dashboard/GlobalStats';
@@ -26,6 +27,7 @@ interface YearData {
 
 export default function Dashboard() {
 
+    const { data: session, status } = useSession();
     const [products, setProducts] = useState<Product[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -71,6 +73,8 @@ export default function Dashboard() {
     }, [lines, activeTab]);
 
     useEffect(() => {
+        if (status === 'loading') return;
+
         // Fetch lines
         fetch('/api/lines')
             .then(res => {
@@ -91,7 +95,7 @@ export default function Dashboard() {
                 console.error('Error fetching lines:', err);
                 setLines([]);
             });
-    }, []);
+    }, [status]);
 
     // Trigger initial selection after lines are loaded or on mount
     useEffect(() => {
@@ -134,14 +138,7 @@ export default function Dashboard() {
                 </div>
             )}
 
-            <LineDrawer
-                isOpen={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-                lines={lines}
-                selectedLineId={selectedLineId}
-                onSelectLine={handleLineSelect}
-                onOpenAuthorModal={() => setModalOpen(true)}
-            />
+
 
             {/* HEADER */}
             <header className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 md:gap-0">
@@ -173,12 +170,28 @@ export default function Dashboard() {
                         className="hidden md:flex bg-primary hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
                         <span>Hazırlayan</span>
                     </button>
-                    {/* Menu Button */}
-                    <button onClick={() => setDrawerOpen(true)}
-                        className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center gap-2">
-                        <span className="material-icons-outlined">menu</span>
-                        <span className="hidden sm:inline">Menu</span>
-                    </button>
+                    {/* Menu Button Container */}
+                    <div
+                        className="relative"
+                        onMouseEnter={() => setDrawerOpen(true)}
+                        onMouseLeave={() => setDrawerOpen(false)}
+                    >
+                        <button
+                            className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center gap-2"
+                        >
+                            <span className="material-icons-outlined">menu</span>
+                            <span className="hidden sm:inline">Menu</span>
+                        </button>
+
+                        <DropdownMenu
+                            isOpen={drawerOpen}
+                            onClose={() => setDrawerOpen(false)}
+                            lines={lines}
+                            selectedLineId={selectedLineId}
+                            onSelectLine={handleLineSelect}
+                            onOpenAuthorModal={() => setModalOpen(true)}
+                        />
+                    </div>
                 </div>
             </header>
 

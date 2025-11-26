@@ -11,7 +11,7 @@ import BackupMenu from '@/components/admin/BackupMenu';
 import { Line } from '@/lib/utils';
 
 export default function AdminDashboard() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [lines, setLines] = useState<Line[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -61,11 +61,13 @@ export default function AdminDashboard() {
     const isAdmin = session?.user?.role === 'ADMIN';
 
     useEffect(() => {
+        if (status === 'loading') return;
+
         fetchLines();
         if (isAdmin) {
             fetchYears();
         }
-    }, [isAdmin]);
+    }, [status, isAdmin]);
 
     const fetchLines = () => {
         fetch('/api/lines')

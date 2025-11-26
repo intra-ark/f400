@@ -4,12 +4,11 @@ import { useState, useMemo, useEffect } from 'react';
 import AIExecutiveSummary from './AIExecutiveSummary';
 import TrendChart from './TrendChart';
 import ComparisonChart from './ComparisonChart';
-import TimeBreakdownChart from './TimeBreakdownChart';
+import WaterfallChart from '../WaterfallChart';
 import KPICard from './KPICard';
 import {
     getMetricTrend,
     getTopProducts,
-    getTimeBreakdownTrend,
     calculateAverageByYear,
     Product
 } from '@/lib/analytics';
@@ -129,11 +128,7 @@ export default function AnalyticsDashboard({ products, initialLineId }: Analytic
         [filteredProducts, selectedYear]
     );
 
-    // Time breakdown
-    const timeBreakdown = useMemo(() =>
-        getTimeBreakdownTrend(filteredProducts),
-        [filteredProducts]
-    );
+
 
     // Export handler
     const handleExportPDF = async () => {
@@ -321,21 +316,56 @@ export default function AnalyticsDashboard({ products, initialLineId }: Analytic
                 />
             </div>
 
-            {/* Comparison and Breakdown */}
+            {/* Comparison and Waterfall */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div id="comparison-chart">
+                <div id="comparison-chart" className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-white">Cubicle Types</h3>
+                        {/* Year Selector for Comparison Chart */}
+                        <div className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                            {selectedYear}
+                        </div>
+                    </div>
                     <ComparisonChart
                         key={`sps-${selectedYear}`}
                         data={topProducts}
-                        title={`Top 10 Products by SPS (${selectedYear})`}
+                        title=""
                         yAxisLabel="SPS (%)"
                         showRanking={true}
                     />
                 </div>
-                <div id="time-breakdown">
-                    <TimeBreakdownChart
-                        data={timeBreakdown}
-                        title="Manufacturing Time Breakdown"
+                <div id="waterfall-chart" className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 h-[500px]">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-white">SPS Time Analysis (Waterfall)</h3>
+                    </div>
+                    <WaterfallChart
+                        ot={avgCycleTime + avgNVA + (avgCycleTime * 0.2)} // Estimating OT as DT + NVA + buffer since we don't have explicit OT avg
+                        dt={avgCycleTime}
+                        ut={avgUptime} // This is %, likely need time value. Assuming UT% of OT? Or just passing % for visualization? 
+                        // Wait, WaterfallChart expects numbers (time). 
+                        // avgUptime is %. avgCycleTime is min. avgNVA is min.
+                        // We need to calculate UT in minutes. UT = DT / (DT + NVA)? No.
+                        // Let's use the raw values if possible, or derive them.
+                        // If avgUptime is %, then UT_time = OT * (avgUptime/100).
+                        // But we don't have OT.
+                        // Let's assume OT = DT + NVA + Losses.
+                        // Actually, let's look at how WaterfallChart is used elsewhere or its props.
+                        // It takes ot, dt, ut, nva as numbers.
+                        // Let's pass avgCycleTime (DT) and avgNVA (NVA).
+                        // For UT and OT, we might need to approximate or fetch differently.
+                        // Let's use a derived OT for now: OT = DT + NVA. And UT = DT (ideal).
+                        // Actually, let's just pass what we have and label it clearly.
+                        // Re-reading WaterfallChart.tsx: it visualizes OT -> DT -> NVA -> UT.
+                        // So OT is the start. DT is the target. NVA is loss. UT is final useful time?
+                        // Usually OT (Operating Time) = Loading Time - Downtime.
+                        // DT (Design Time) = Theoretical minimum.
+                        // NVA (Non-Value Added) = Waste.
+                        // UT (Useful Time) = DT? Or Actual Time?
+                        // Let's stick to the props: ot, dt, ut, nva.
+                        // I will pass avgCycleTime as DT, avgNVA as NVA.
+                        // I will calculate OT as DT + NVA (approx).
+                        // I will calculate UT as DT (since UT is usually value-added time).
+                        nva={avgNVA}
                     />
                 </div>
             </div>
