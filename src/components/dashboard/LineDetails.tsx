@@ -86,126 +86,112 @@ export default function LineDetails({ line, products, onBack }: LineDetailsProps
             </div>
 
             {/* 2. VERİ PANELLERİ VE WATERFALL */}
-            <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6">
-                {/* 2.1. COMPARİSON TABLE */}
-                <main className="liquid-glass rounded-lg border border-white/80 shadow-xl overflow-hidden p-0">
-                    <div className="scroll-container">
-                        <div className="flex">
-
-                            {/* SABİT ETİKET SÜTUNU */}
-                            <div className="sticky-labels hidden lg:flex w-48 flex-col justify-end space-y-2 py-4 px-3">
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">Cubicle Types:</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">Design Time (DT):</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">Useful Time (UT):</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">Non-Value Added:</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">KD (%):</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">KE:</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">KER:</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">KSR:</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">OT:</div>
-                                <div className="text-right font-medium h-10 flex items-center justify-end pr-2 text-text-secondary-light">TSR:</div>
-                            </div>
-
-                            {/* YILLIK VERİ PANELLERİ */}
-                            {['2023', '2024', '2025', '2026', '2027'].map(year => {
-                                const data = getProductData(year);
-                                return (
-                                    <div key={year} className="data-panel p-4 border-r border-border-light">
-                                        <h4 className="text-lg font-bold text-center mb-3">{year}</h4>
-                                        <div className="space-y-2">
-                                            <select
-                                                value={selectedProducts[year] || ''}
-                                                onChange={(e) => handleProductChange(year, e.target.value)}
-                                                className="product-select w-full bg-primary/10 border-primary/20 text-center rounded-lg h-10 flex items-center justify-center font-semibold text-text-primary-light p-2 transition text-sm"
-                                            >
-                                                <option value="" disabled>Ürün Seçiniz...</option>
-                                                {products.filter(p => p.yearData.some(d => d.year === parseInt(year))).map(p => (
-                                                    <option key={p.id} value={p.id}>{p.name}</option>
-                                                ))}
-                                            </select>
-
-                                            <div className="bg-white/50 dark:bg-black/20 data-row">
-                                                <span className="lg:hidden">Design Time (DT):</span>
-                                                <span className="data-value">{formatNumber(data?.dt)}</span>
-                                            </div>
-                                            <div className="bg-white/50 dark:bg-black/20 data-row">
-                                                <span className="lg:hidden">Useful Time (UT):</span>
-                                                <span className="data-value">{formatNumber(data?.ut)}</span>
-                                            </div>
-                                            <div className="bg-white/50 dark:bg-black/20 data-row">
-                                                <span className="lg:hidden">Non-Value Added:</span>
-                                                <span className="data-value">{formatNumber(data?.nva)}</span>
-                                            </div>
-                                            <div className="bg-white/50 dark:bg-black/20 data-row">
-                                                <span className="lg:hidden">KD (%):</span>
-                                                <span className="data-value text-primary">{formatKDPercent(data?.kd)}</span>
-                                            </div>
-                                            <div className="bg-white/50 dark:bg-black/20 data-row">
-                                                <span className="lg:hidden">KE:</span>
-                                                <span className="data-value">{formatKDPercent(data?.ke)}</span>
-                                            </div>
-                                            <div className="flex items-center h-10 justify-end lg:justify-start">
-                                                <span className="lg:hidden mr-2">KER:</span>
-                                                <span className="w-1/4 text-center hidden lg:inline">%</span>
-                                                <input className="ker-input ker-red" type="text" readOnly value={formatPercentInput(data?.ker)} />
-                                            </div>
-                                            <div className="flex items-center h-10 justify-end lg:justify-start">
-                                                <span className="lg:hidden mr-2">KSR:</span>
-                                                <span className="w-1/4 text-center hidden lg:inline">%</span>
-                                                <input className="ker-input bg-white/50 dark:bg-black/20 border-border-light text-center" type="text" readOnly value={formatPercentInput(data?.ksr)} />
-                                            </div>
-                                            <div className="bg-white/50 dark:bg-black/20 data-row">
-                                                <span className="lg:hidden">OT:</span>
-                                                <span className="data-value">{formatNumber(data?.otr)}</span>
-                                            </div>
-                                            <div className="bg-white/50 dark:bg-black/20 data-row">
-                                                <span className="lg:hidden">TSR:</span>
-                                                <span className="data-value text-red-500 font-mono">{data?.tsr || '#DIV/0!'}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-
-                        </div>
-                    </div>
-                </main>
-
-                {/* 2.2. WATERFALL CHART - SAĞDA */}
-                <section className="liquid-glass rounded-lg border border-white/80 shadow-xl p-6">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                                <span className="material-icons-outlined text-primary">bar_chart</span>
-                                SPS Time Analysis
-                            </h3>
-                        </div>
-
-                        {/* Year Selector */}
-                        <div className="flex p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
+            <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6">
+                {/* 2.1. SINGLE YEAR DATA PANEL */}
+                <main className="liquid-glass rounded-lg border border-white/80 shadow-xl overflow-hidden">
+                    {/* Year Selector */}
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-wrap gap-2 justify-center">
                             {['2023', '2024', '2025', '2026', '2027'].map(year => (
                                 <button
                                     key={year}
                                     onClick={() => setSelectedChartYear(year)}
-                                    className={`flex-1 px-3 py-2 rounded-md text-sm font-bold transition-all ${selectedChartYear === year
-                                        ? 'bg-white dark:bg-gray-600 text-primary shadow-sm'
-                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${selectedChartYear === year
+                                        ? 'bg-primary text-white shadow-md'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                                         }`}
                                 >
                                     {year}
                                 </button>
                             ))}
                         </div>
+                    </div>
 
-                        {/* Product Info */}
-                        <div className="text-sm text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-black/20 px-3 py-2 rounded border border-white/50">
-                            <span className="font-bold text-gray-800 dark:text-gray-200">
-                                {products.find(p => p.id.toString() === selectedProducts[selectedChartYear])?.name || 'No Product Selected'}
-                            </span>
+                    {/* Data for Selected Year */}
+                    <div className="p-6">
+                        <div className="space-y-3">
+                            {/* Product Selector */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Cubicle Types:
+                                </label>
+                                <select
+                                    value={selectedProducts[selectedChartYear] || ''}
+                                    onChange={(e) => handleProductChange(selectedChartYear, e.target.value)}
+                                    className="w-full bg-primary/10 border border-primary/20 text-center rounded-lg px-4 py-3 font-semibold text-gray-800 dark:text-white transition"
+                                >
+                                    <option value="" disabled>Ürün Seçiniz...</option>
+                                    {products.filter(p => p.yearData.some(d => d.year === parseInt(selectedChartYear))).map(p => (
+                                        <option key={p.id} value={p.id}>{p.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Data Rows */}
+                            {(() => {
+                                const data = getProductData(selectedChartYear);
+                                return (
+                                    <>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">Design Time (DT):</span>
+                                            <span className="font-bold text-gray-900 dark:text-white">{formatNumber(data?.dt)}</span>
+                                        </div>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">Useful Time (UT):</span>
+                                            <span className="font-bold text-gray-900 dark:text-white">{formatNumber(data?.ut)}</span>
+                                        </div>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">Non-Value Added:</span>
+                                            <span className="font-bold text-gray-900 dark:text-white">{formatNumber(data?.nva)}</span>
+                                        </div>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">KD (%):</span>
+                                            <span className="font-bold text-primary text-lg">{formatKDPercent(data?.kd)}</span>
+                                        </div>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">KE:</span>
+                                            <span className="font-bold text-gray-900 dark:text-white">{formatKDPercent(data?.ke)}</span>
+                                        </div>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">KER:</span>
+                                            <span className="font-bold text-red-600">% {formatPercentInput(data?.ker)}</span>
+                                        </div>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">KSR:</span>
+                                            <span className="font-bold text-gray-900 dark:text-white">% {formatPercentInput(data?.ksr)}</span>
+                                        </div>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">OT:</span>
+                                            <span className="font-bold text-gray-900 dark:text-white">{formatNumber(data?.otr)}</span>
+                                        </div>
+                                        <div className="bg-white/50 dark:bg-black/20 rounded-lg px-4 py-3 flex justify-between items-center">
+                                            <span className="font-medium text-gray-700 dark:text-gray-300">TSR:</span>
+                                            <span className="font-bold text-red-500 font-mono">{data?.tsr || '#DIV/0!'}</span>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+                    </div>
+                </main>
+
+                {/* 2.2. WATERFALL CHART - BÜYÜK SAĞ PANEL */}
+                <section className="liquid-glass rounded-lg border border-white/80 shadow-xl p-6">
+                    <div className="flex flex-col h-full">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                <span className="material-icons-outlined text-primary">bar_chart</span>
+                                SPS Time Analysis
+                            </h3>
+                            <div className="text-sm text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-black/20 px-4 py-2 rounded-lg border border-white/50">
+                                <span className="font-bold text-gray-800 dark:text-gray-200">
+                                    {products.find(p => p.id.toString() === selectedProducts[selectedChartYear])?.name || 'No Product Selected'}
+                                </span>
+                            </div>
                         </div>
 
-                        {/* Waterfall Chart */}
-                        <div className="bg-white/40 dark:bg-black/20 rounded-xl p-4 border border-white/50 h-[500px]">
+                        {/* Waterfall Chart - Full Height */}
+                        <div className="flex-1 bg-white/40 dark:bg-black/20 rounded-xl p-6 border border-white/50 min-h-[600px]">
                             <WaterfallChart
                                 ot={getProductData(selectedChartYear)?.otr ?? null}
                                 dt={getProductData(selectedChartYear)?.dt ?? null}
