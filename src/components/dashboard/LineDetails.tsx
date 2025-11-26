@@ -17,7 +17,6 @@ export default function LineDetails({ line, products, onBack }: LineDetailsProps
         '2027': '',
     });
     const [selectedYear, setSelectedYear] = useState('2023');
-    const [headerImage, setHeaderImage] = useState('/schneider_f400_diagram.png');
 
     // Initialize defaults when products change
     useEffect(() => {
@@ -41,13 +40,6 @@ export default function LineDetails({ line, products, onBack }: LineDetailsProps
             setSelectedProducts(prev => ({ ...prev, ...defaults }));
         }
     }, [products]);
-
-    // Update header image when line changes
-    useEffect(() => {
-        if (line) {
-            setHeaderImage(line.headerImageUrl || 'https://placehold.co/2816x1536/F5F5F5/3DCD58?text=NO+IMAGE+UPLOADED');
-        }
-    }, [line]);
 
     const handleProductChange = (year: string, productId: string) => {
         setSelectedProducts(prev => ({ ...prev, [year]: productId }));
@@ -76,34 +68,25 @@ export default function LineDetails({ line, products, onBack }: LineDetailsProps
                 Back to Lines List
             </button>
 
-            {/* 1. BÜYÜK GÖRSEL ALANI */}
-            <div className="relative mb-4 md:mb-8 rounded-lg liquid-glass shadow-xl p-2 md:p-4 border border-white/80 w-full lg:w-8/12 mx-auto">
-                <div className="image-placeholder-inner rounded-lg overflow-hidden flex justify-center items-center">
-                    <img src={headerImage}
-                        onError={(e) => { e.currentTarget.src = 'https://placehold.co/2816x1536/F5F5F5/3DCD58?text=CUBICLE+MODEL+VISUALISATION'; }}
-                        alt="Technical Diagram" className="w-full h-full object-cover p-0" />
-                </div>
-            </div>
-
             {/* 2. VERİ PANELLERİ VE WATERFALL */}
             <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6">
                 {/* 2.1. SINGLE YEAR DATA PANEL */}
                 <main className="liquid-glass rounded-lg border border-white/80 shadow-xl overflow-hidden">
-                    {/* Year Selector */}
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            {['2023', '2024', '2025', '2026', '2027'].map(year => (
-                                <button
-                                    key={year}
-                                    onClick={() => setSelectedYear(year)}
-                                    className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${selectedYear === year
-                                        ? 'bg-primary text-white shadow-md'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                        }`}
-                                >
-                                    {year}
-                                </button>
-                            ))}
+                    {/* Year Selector - Dropdown Style */}
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-center">
+                        <div className="relative w-full max-w-xs">
+                            <select
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(e.target.value)}
+                                className="w-full appearance-none bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-primary font-bold text-center shadow-sm transition-all cursor-pointer"
+                            >
+                                {['2023', '2024', '2025', '2026', '2027'].map(year => (
+                                    <option key={year} value={year}>{year} Analysis</option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                <span className="material-icons-outlined">expand_more</span>
+                            </div>
                         </div>
                     </div>
 
